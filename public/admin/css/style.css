@@ -1,0 +1,239 @@
+/* Header */
+.header{
+    background: #DB0E0E;
+    padding: 10px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header .inner-logo a{
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+}
+/* End Header */
+
+/* Body */
+.body .sider{
+    width: 150px;
+    background: #db0e0e51;
+    height: calc(100vh - 56px);
+    position: fixed;
+    top: 56px;
+    left: 0;
+}
+
+.body .main{
+    margin: 15px;
+    position: relative;
+    left: 150px;
+    width: cacl(100% -180px);
+}
+/* End Body */
+
+/* Sider */
+.sider .inner-menu > ul{
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sider .inner-menu ul li a{
+    text-decoration: none;
+    color: #fff;
+    display: block;
+    padding: 6px 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.sider .inner-menu ul li a:hover{ 
+    color: #db0e0e;
+}
+.sider .inner-menu ul li a.active {
+    color: #fff;
+    background-color: #db0e0e;; /* Màu nền nổi bật */
+    font-weight: bold; /* Làm đậm chữ */
+    text-decoration: none; /* Bỏ gạch chân */
+}
+
+
+
+/* End Sider */
+
+/* Show Alert */
+[show-alert] {
+    position: fixed;
+    top: 70px;
+    right: 15px;
+    z-index: 9999;
+}
+
+[show-alert].alert-hidden{
+    animation-name: alert-hidden;
+    animation-duration: 0.5s;
+    animation-fill-mode: both;
+}
+
+@keyframes alert-hidden {
+  from{
+    right: 15px;
+  }
+  to{
+    right: -100%;
+    display: none;
+  }
+}
+
+[show-alert] [close-alert] {
+    background: #ffffffc4;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    align-items: center;
+    line-height: 24px;
+    text-align: center;
+    font-weight: 600;
+    border-radius: 50%;
+    cursor: pointer;
+}
+/* End Show Alert */
+
+
+/* Image-Preview */
+.image-preview{
+    width: 150px;
+    height: auto;
+    margin-top: 15px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.image-preview[src=""]{
+    display: none;
+}
+/* End Image-Preview */
+
+.main{
+    width: 88%;
+}
+
+/* Profile User */
+.user-box {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-image {
+    width: 200px;
+    height: 200px;
+    border: 2px solid #ddd;
+    padding: 10px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease-in-out;
+}
+
+.user-image:hover {
+    transform: scale(1.05);
+}
+
+.user-box1 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid #ddd;
+    padding: 30px;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 350px;
+}
+
+.user-name {
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 15px;
+    color: #333;
+}
+
+.user-edit {
+    margin-top: 20px;
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+    text-align: center;
+    transition: background-color 0.3s ease-in-out;
+    text-decoration: none;
+}
+
+.user-edit:hover {
+    background-color: #0056b3;
+}
+
+.user-box2 {
+    flex: 1;
+    margin-left: 50px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 40px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-size: 18px;
+    line-height: 1.6;
+    color: #555;
+}
+
+.user-box2 p {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ccc; /* Viền xung quanh các thẻ p */
+    border-radius: 8px; /* Bo góc */
+    background-color: #f5f5f5; /* Nền nhẹ cho các thẻ p */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Tạo bóng nhẹ cho thẻ p */
+    transition: background-color 0.3s ease-in-out;
+}
+
+.user-box2 p:hover {
+    background-color: #eaeaea; /* Đổi màu khi hover */
+}
+
+.user-box2 span {
+    font-weight: bold;
+    color: #007bff;
+}
+/* End Profile User */
+
+/* Thông tin cá nhân */
+.user-top img{
+    width: 100px; /* Đặt chiều rộng của ảnh */
+    height: 100px; /* Đặt chiều cao của ảnh */
+    border: 2px solid #ddd; /* Đường viền xung quanh ảnh */
+    border-radius: 50%; /* Bo góc thành hình tròn */
+    object-fit: cover; /* Đảm bảo ảnh không bị méo */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Đổ bóng cho ảnh */
+    transition: transform 0.3s ease-in-out; /* Hiệu ứng chuyển động khi hover */
+}
+.user-top1{
+    margin-left: 20px;
+    font-size: 25px;
+}
+.user-top2{
+    margin-top: 20px;
+}
+.user-phone, .user-role{
+    border: 1px solid #ddd;
+    padding: 5px 20px;
+    border-radius: 5px;
+}
+/* End Thông tin cá nhân */

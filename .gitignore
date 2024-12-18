@@ -1,0 +1,8 @@
+
+#dependencies
+/node_modules
+/.php
+.php.js
+
+#misc
+.env

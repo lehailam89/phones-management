@@ -1,0 +1,29 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+
+block main
+  +alert-success(5000)
+  +alert-error(5000)
+  .container.my-3
+    .row
+      .col-12
+        h1 Quản lý đơn hàng
+    .row
+      .col-12
+        if(orders.length > 0)
+          table(class="table table-bordered")
+            thead
+              tr
+                th Mã đơn hàng
+                th Ngày đặt
+                th Tổng tiền
+                th Người đặt
+            tbody
+              each order in orders
+                tr
+                  td #{order._id}
+                  td #{order.createdAt.toLocaleDateString()}
+                  td #{order.totalPrice}$
+                  td #{order.userInfo.fullName}
+        else
+          p Không có đơn hàng nào.

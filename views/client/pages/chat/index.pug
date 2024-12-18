@@ -1,0 +1,19 @@
+extends ../../layouts/default.pug
+
+block main
+  .container.my-3
+    .row
+      .col-12
+        h1 Chat với AI Gemini
+    .row
+      .col-12
+        button#open-chatbox Mở Chatbox
+        #chatbox(style="display: none;")
+          .chatbox-header
+            h4 Chat với chúng tôi
+            button#close-chatbox X
+          .chatbox-body
+            #messages
+          .chatbox-footer
+            input#chat-input(type="text" placeholder="Nhập tin nhắn...")
+            button#send-chat Gửi

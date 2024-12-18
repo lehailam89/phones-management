@@ -1,0 +1,24 @@
+.sider
+    .inner-menu
+        ul
+            li
+                a(href=`${prefixAdmin}/dashboard`, class=(currentUrl === `${prefixAdmin}/dashboard` ? 'active' : '')) Tổng quan
+            if(role.permissions.includes('products-category_view'))
+                li 
+                    a(href=`${prefixAdmin}/products-category`, class=(currentUrl === `${prefixAdmin}/products-category` ? 'active' : '')) Danh mục sản phẩm 
+            if(role.permissions.includes('products_view'))
+                li 
+                    a(href=`${prefixAdmin}/products`, class=(currentUrl === `${prefixAdmin}/products` ? 'active' : '')) Sản phẩm
+            if(role.permissions.includes('roles_view'))
+                li 
+                    a(href=`${prefixAdmin}/roles`, class=(currentUrl === `${prefixAdmin}/roles` ? 'active' : '')) Nhóm quyền
+            if(role.permissions.includes('roles_permissions'))
+                li 
+                    a(href=`${prefixAdmin}/roles/permissions`, class=(currentUrl === `${prefixAdmin}/roles/permissions` ? 'active' : '')) Phân quyền
+            if(role.permissions.includes('accounts_view'))
+                li 
+                    a(href=`${prefixAdmin}/accounts`, class=(currentUrl === `${prefixAdmin}/accounts` ? 'active' : '')) Tài khoản
+            li 
+                a(href=`${prefixAdmin}/settings/general`, class=(currentUrl === `${prefixAdmin}/settings/general` ? 'active' : '')) Cài đặt chung
+            li  
+                a(href=`${prefixAdmin}/user/orders`, class=(currentUrl === `${prefixAdmin}/user/orders` ? 'active' : '')) Đơn hàng

@@ -1,0 +1,35 @@
+extends ../../layouts/default.pug
+
+block main
+  h1(class="mb-4") Thông tin cá nhân
+  
+  div(class="user-box")
+    div(class="user-box1")
+      if (user.avatar)
+        img(class="user-image" src=user.avatar width="150px" class="mb-3")
+      //- else
+      //-   img(src="/admin/images/avatar.png" width="150px" class="mb-3")
+
+      if (user.fullName)
+        p(class="user-name") <b>#{user.fullName}</b>
+
+      a(
+        class="user-edit"
+        href=`${prefixAdmin}/my-account/edit`
+        class="btn btn-primary"
+      ) Chỉnh sửa thông tin
+
+    div(class="user-box2")  
+      if (user.email)
+        p Email: <b>#{user.email}</b>
+
+      if (user.phone)
+        p Số điện thoại: <b>#{user.phone}</b>
+
+      p 
+        span Trạng thái: 
+        span
+          <b>#{user.status === "active" ? "Hoạt động": "Dừng hoạt động"}</b>
+
+      if (role.title)
+        p Phân quyền: <b>#{role.title}</b>
