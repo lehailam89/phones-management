@@ -1,23 +1,46 @@
 const Product = require("../../models/product.model");
 const ProductCategory = require("../../models/product-category.model");
 const productsHelper = require("../../helpers/products.js");
+const paginationHelper = require("../../helpers/pagination.js");
 
 //[GET] /products
 module.exports.index = async (req, res) => {
+    let initPagination = {
+        currentPage: 1,
+        limitItems: 8
+    }
+
+    const count = await Product.countDocuments({
+        deleted: false,
+        status: "active"
+    });
+
+    const objectPagination = paginationHelper(initPagination, req.query, count);
+
     const products = await Product.find({
-        deleted: false
-    }).sort({ position: "desc"});
+        deleted: false,
+        status: "active"
+    })
+    .sort({ position: "desc" })
+    .skip(objectPagination.skip)
+    .limit(objectPagination.limitItems);
 
     const newProducts = productsHelper.priceNewProducts(products);
 
     res.render("client/pages/products/index.pug", {
         pageTitle: "Danh sách sản phẩm",
-        products: newProducts
+        products: newProducts,
+        pagination: objectPagination
     })
 }
 
 //[GET] /products/:slugCategory
 module.exports.category = async (req, res) => {
+    let initPagination = {
+        currentPage: 1,
+        limitItems: 4
+    }
+
     const slugCategory = req.params.slugCategory;
 
     const category = await ProductCategory.findOne({
@@ -47,18 +70,29 @@ module.exports.category = async (req, res) => {
 
     const listSubCategoryId = listSubCategory.map(item => item.id);
 
+    const count = await Product.countDocuments({
+        product_category_id: { $in: [category.id, ...listSubCategoryId] },
+        status: "active",
+        deleted: false
+    });
+
+    const objectPagination = paginationHelper(initPagination, req.query, count);
 
     const products = await Product.find({
         product_category_id: { $in: [category.id, ...listSubCategoryId] },
         status: "active",
         deleted: false
-    }).sort({ position: "desc"});
+    })
+    .sort({ position: "desc"})
+    .skip(objectPagination.skip)
+    .limit(objectPagination.limitItems);
 
     const newProducts = productsHelper.priceNewProducts(products);
 
     res.render("client/pages/products/index.pug", {
         pageTitle: category.title,
-        products: newProducts
+        products: newProducts,
+        pagination: objectPagination
     })
 }
 

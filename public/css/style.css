@@ -65,6 +65,7 @@ header {
 
 .header .inner-menu > ul > li {
     margin-left: 5px;
+    margin-top: 7px;
 }
 
 .header .inner-menu > ul > li > a {

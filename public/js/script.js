@@ -26,6 +26,21 @@ if(buttonsGoBack.length > 0){
 }
 //End Button Go Back
 
+//Phân trang
+document.addEventListener('DOMContentLoaded', () => {
+    const paginationButtons = document.querySelectorAll('[button-pagination]');
+
+    paginationButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const page = button.getAttribute('button-pagination');
+            const url = new URL(window.location.href);
+            url.searchParams.set('page', page);
+            window.location.href = url.href;
+        });
+    });
+});
+//End Phân trang
+
 // Giao tiếp với API Gemini
 document.addEventListener('DOMContentLoaded', () => {
     const chatbox = document.getElementById('chatbox');
