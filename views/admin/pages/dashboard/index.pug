@@ -28,8 +28,6 @@ block main
                 p <b>Phân quyền:</b>
                 p.user-role  #{role.title}
 
-
-
     .row
         .col-6
             .card.mb-4
@@ -61,3 +59,17 @@ block main
                     p Số lượng: <b>#{statistic.user.total}</b>
                     p Hoạt động: <b>#{statistic.user.active}</b>
                     p Dừng hoạt động: <b>#{statistic.user.inactive}</b>
+
+    .row
+    .col-12
+        .card.mb-4
+            .card-header Biểu đồ thống kê sản phẩm
+            .card-body
+                canvas#productChart.chart-small
+
+    script.
+      var productStatistics = {
+          total: !{statistic.product.total},
+          active: !{statistic.product.active},
+          inactive: !{statistic.product.inactive}
+      };

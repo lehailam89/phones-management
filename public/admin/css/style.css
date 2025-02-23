@@ -237,3 +237,10 @@
     border-radius: 5px;
 }
 /* End Thông tin cá nhân */
+
+/* Chart */
+.chart-small {
+    width: 400px !important;
+    height: 200px !important;
+}
+/* End Chart */
