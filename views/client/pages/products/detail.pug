@@ -15,7 +15,15 @@ block main
       .row
         .col-6
           .inner-thumb
-            img(src=product.thumbnail, alt=product.title)
+            button.main-arrow.left-main-arrow &lt;
+            img(src=product.thumbnail, alt=product.title, id="main-image")
+            button.main-arrow.right-main-arrow &gt;
+          .thumb-images-wrapper
+            button.thumb-arrow.left-arrow &lt;
+            .thumb-images
+              each image, index in product.images
+                img(src=image, alt=product.title, class="product-image", data-index=index)
+            button.thumb-arrow.right-arrow &gt;
         .col-6
           h1(class="inner-title") #{product.title}
 
@@ -60,3 +68,61 @@ block main
         .col-12
           +box-head("Mô tả sản phẩm")
           .inner-desc !{product.description}
+
+    script.
+      document.addEventListener('DOMContentLoaded', () => {
+        const mainImage = document.getElementById('main-image');
+        const thumbImages = document.querySelectorAll('.thumb-images .product-image');
+        const thumbImagesWrapper = document.querySelector('.thumb-images');
+        const leftArrow = document.querySelector('.left-arrow');
+        const rightArrow = document.querySelector('.right-arrow');
+        const leftMainArrow = document.querySelector('.left-main-arrow');
+        const rightMainArrow = document.querySelector('.right-main-arrow');
+
+        let currentIndex = 0;
+
+        const updateMainImage = (index) => {
+          if (index >= 0 && index < thumbImages.length) {
+            mainImage.src = thumbImages[index].src;
+            thumbImages.forEach(thumb => thumb.classList.remove('selected'));
+            thumbImages[index].classList.add('selected');
+            currentIndex = index;
+          }
+        };
+
+        thumbImages.forEach((thumb, index) => {
+          thumb.addEventListener('click', () => {
+            updateMainImage(index);
+          });
+        });
+
+        leftArrow.addEventListener('click', () => {
+          thumbImagesWrapper.scrollBy({
+            left: -100,
+            behavior: 'smooth'
+          });
+        });
+
+        rightArrow.addEventListener('click', () => {
+          thumbImagesWrapper.scrollBy({
+            left: 100,
+            behavior: 'smooth'
+          });
+        });
+
+        leftMainArrow.addEventListener('click', () => {
+          updateMainImage(currentIndex - 1);
+          thumbImagesWrapper.scrollBy({
+            left: -100,
+            behavior: 'smooth'
+          });
+        });
+
+        rightMainArrow.addEventListener('click', () => {
+          updateMainImage(currentIndex + 1);
+          thumbImagesWrapper.scrollBy({
+            left: 100,
+            behavior: 'smooth'
+          });
+        });
+      });

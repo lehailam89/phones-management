@@ -110,6 +110,19 @@ block main
                     upload-image-preview
                 )
             div(class="form-group")
+                label(for="images") Ảnh
+                input(
+                    type="file"
+                    class="form-control-file"
+                    id="images"
+                    name="images"
+                    accept="image/*"
+                    multiple
+                )
+                if product && product.images
+                    each image in product.images
+                        img(src=image, class="image-preview", upload-image-preview)
+            div(class="form-group")
                 label(for="position") Vị trí
                 input(
                     type="number"

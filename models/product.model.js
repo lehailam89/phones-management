@@ -15,6 +15,7 @@ const productSchema = new mongoose.Schema({
     discountPercentage: Number,
     stock: Number,
     thumbnail: String,
+    images: [String], // Thêm trường này để lưu trữ nhiều ảnh
     status: String,
     featured: String,
     position: Number,

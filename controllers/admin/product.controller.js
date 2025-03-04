@@ -206,21 +206,24 @@ module.exports.create = async (req, res) => {
 
 //[POST] /admin/products/create
 module.exports.createPost = async (req, res) => {
-
     req.body.price = parseInt(req.body.price);
     req.body.discountPercentage = parseInt(req.body.discountPercentage);
     req.body.stock = parseInt(req.body.stock);
 
-    if(req.body.position === ""){
+    if (req.body.position === "") {
         const countProducts = await Product.countDocuments();
         req.body.position = countProducts + 1;
     } else {
         req.body.position = parseInt(req.body.position);
     }
 
-    // if(req.file && req.file.filename){
-    //     req.body.thumbnail = `/uploads/${req.file.filename}`;
-    // }
+    if (req.body.thumbnail) {
+        req.body.thumbnail = req.body.thumbnail[0];
+    }
+
+    if (req.body.images) {
+        req.body.images = req.body.images;
+    }
 
     req.body.createdBy = {
         account_id: res.locals.user.id
@@ -229,9 +232,7 @@ module.exports.createPost = async (req, res) => {
     const product = new Product(req.body);
     await product.save();
 
-    req.flash("success", "Tạo mới sản phẩm thành công")
-
-
+    req.flash("success", "Tạo mới sản phẩm thành công");
     res.redirect(`${systemConfig.prefixAdmin}/products`);
 };
     
@@ -269,22 +270,25 @@ module.exports.editPatch = async (req, res) => {
     req.body.stock = parseInt(req.body.stock);
     req.body.position = parseInt(req.body.position);
 
-    if(req.file && req.file.filename){
-        req.body.thumbnail = `/uploads/${req.file.filename}`;
+    if (req.body.thumbnail) {
+        req.body.thumbnail = req.body.thumbnail[0];
+    }
+
+    if (req.body.images) {
+        req.body.images = req.body.images;
     }
 
     const updatedBy = {
         account_id: res.locals.user.id,
         updatedAt: new Date()
-    }
+    };
 
-    await Product.updateOne({ _id: id}, {
+    await Product.updateOne({ _id: id }, {
         ...req.body,
-        $push: {updatedBy: updatedBy}
+        $push: { updatedBy: updatedBy }
     });
 
-    req.flash("success", "Cập nhật sản phẩm thành công!!!!");   
-
+    req.flash("success", "Cập nhật sản phẩm thành công");
     res.redirect("back");
 };
 
