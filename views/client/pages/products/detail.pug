@@ -7,13 +7,13 @@ block main
 
   .product-detail
     .container.my-5
-      button(
-        class="btn btn-secondary"
-        button-go-back
-        style="margin-bottom: 20px"
-        ) Trở lại
+      //- button(
+      //-   class="btn btn-secondary"
+      //-   button-go-back
+      //-   style="margin-bottom: 20px"
+      //-   ) Trở lại
       .row
-        .col-6
+        .detail-phone 
           .inner-thumb
             button.main-arrow.left-main-arrow &lt;
             img(src=product.thumbnail, alt=product.title, id="main-image")
@@ -80,6 +80,7 @@ block main
         const rightMainArrow = document.querySelector('.right-main-arrow');
 
         let currentIndex = 0;
+        
 
         const updateMainImage = (index) => {
           if (index >= 0 && index < thumbImages.length) {
