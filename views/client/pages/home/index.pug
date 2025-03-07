@@ -3,10 +3,28 @@ include ../../mixins/box-head.pug
 include ../../mixins/product-layout.pug
 
 block main
-    .hero-section
-        h1 Chào mừng đến với Lam Mobiles
-        p Khám phá những sản phẩm mới nhất và nổi bật ngay tại cửa hàng của chúng tôi!
-        button(onclick="window.location.href='http://localhost:3000/products'") Shop Now
+    .container
+        .hero-section
+            h1 Chào mừng đến với Lam Mobiles
+            p Khám phá những sản phẩm mới nhất và nổi bật ngay tại cửa hàng của chúng tôi!
+            button(onclick="window.location.href='http://localhost:3000/products'") Shop Now
+
+    .section-slider.my-5
+        .container
+            .row
+                .col-12
+                    +box-head("Hình ảnh sản phẩm")
+
+            .swiper-container
+                .swiper-wrapper
+                    each image in images
+                        .swiper-slide
+                            img(src=image, alt="Product Image")
+
+                // Đặt các nút điều hướng bên trong .swiper-container
+                .swiper-button-next
+                .swiper-button-prev
+                
     .section-products-featured.my-5
         .container
             .row 
@@ -22,3 +40,22 @@ block main
                     +box-head("Sản phẩm mới")
 
             +product-grid(productsNew)
+
+    // Thêm các liên kết CSS và JS của Swiper
+    link(rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css")
+    script(src="https://unpkg.com/swiper/swiper-bundle.min.js")
+
+    script.
+      document.addEventListener('DOMContentLoaded', () => {
+        const swiper = new Swiper('.swiper-container', {
+          navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+          },
+          loop: true,
+          autoplay: {
+            delay: 3000,
+            disableOnInteraction: false,
+          },
+        });
+      });

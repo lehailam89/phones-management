@@ -22,9 +22,17 @@ const productsNew = await Product.find({
 const newProductsNew= productsHelper.priceNewProducts(productsNew);
 //End hiển thị sản phẩm mới nhất
 
+// Mảng hình ảnh
+const images = [
+    'https://bestpricegh.com/cdn/shop/files/apple-iphone-16-pro-max-2_2048x.jpg?v=1730148544',
+    'https://cdn.tgdd.vn/Products/Images/42/307174/Slider/samsung-galaxy-s24-ultra-5g-thumb-youtube-1020x570.jpg',
+    'https://cdn.tgdd.vn/Products/42/307174/samsung-galaxy-s24-ultra-5g-1-1020x570.jpg'
+];
+
     res.render("client/pages/home/index.pug", {
         pageTitle: "Trang chủ",
         productsFeatured: newProductsFeatured,
-        productsNew: newProductsNew
+        productsNew: newProductsNew,
+        images: images
     })
 }
