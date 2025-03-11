@@ -15,14 +15,16 @@ block main
       .row
         .detail-phone 
           .inner-thumb
-            button.main-arrow.left-main-arrow &lt;
+            button.main-arrow.left-main-arrow.disabled &lt;
             img(src=product.thumbnail, alt=product.title, id="main-image")
             button.main-arrow.right-main-arrow &gt;
           .thumb-images-wrapper
             button.thumb-arrow.left-arrow &lt;
-            .thumb-images
-              each image, index in product.images
-                img(src=image, alt=product.title, class="product-image", data-index=index)
+            .thumb-images.swiper-container
+              .swiper-wrapper
+                each image, index in product.images
+                  .swiper-slide
+                    img(src=image, alt=product.title, class="product-image", data-index=index)
             button.thumb-arrow.right-arrow &gt;
         .col-6
           h1(class="inner-title") #{product.title}
@@ -61,7 +63,6 @@ block main
               class="btn btn-success btn-block"
             ) Thêm vào giỏ hàng
 
-    hr
 
     .container.my-5
       .row
@@ -69,18 +70,18 @@ block main
           +box-head("Mô tả sản phẩm")
           .inner-desc !{product.description}
 
+    // Thêm các liên kết CSS và JS của Swiper
+    link(rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css")
+    script(src="https://unpkg.com/swiper/swiper-bundle.min.js")
+
     script.
       document.addEventListener('DOMContentLoaded', () => {
         const mainImage = document.getElementById('main-image');
-        const thumbImages = document.querySelectorAll('.thumb-images .product-image');
-        const thumbImagesWrapper = document.querySelector('.thumb-images');
-        const leftArrow = document.querySelector('.left-arrow');
-        const rightArrow = document.querySelector('.right-arrow');
+        const thumbImages = document.querySelectorAll('.swiper-slide .product-image');
         const leftMainArrow = document.querySelector('.left-main-arrow');
         const rightMainArrow = document.querySelector('.right-main-arrow');
 
         let currentIndex = 0;
-        
 
         const updateMainImage = (index) => {
           if (index >= 0 && index < thumbImages.length) {
@@ -88,6 +89,8 @@ block main
             thumbImages.forEach(thumb => thumb.classList.remove('selected'));
             thumbImages[index].classList.add('selected');
             currentIndex = index;
+            swiper.slideTo(index); // Di chuyển Swiper đến ảnh tương ứng
+            updateArrowsVisibility();
           }
         };
 
@@ -97,33 +100,48 @@ block main
           });
         });
 
-        leftArrow.addEventListener('click', () => {
-          thumbImagesWrapper.scrollBy({
-            left: -100,
-            behavior: 'smooth'
-          });
+        const swiper = new Swiper('.swiper-container', {
+          navigation: {
+            nextEl: '.right-arrow',
+            prevEl: '.left-arrow',
+          },
+          slidesPerView: 5,
+          spaceBetween: 5,
         });
 
-        rightArrow.addEventListener('click', () => {
-          thumbImagesWrapper.scrollBy({
-            left: 100,
-            behavior: 'smooth'
-          });
-        });
+        const updateArrowsVisibility = () => {
+          if (thumbImages.length === 0) {
+            leftMainArrow.style.display = 'none';
+            rightMainArrow.style.display = 'none';
+          } else {
+            leftMainArrow.style.display = 'block';
+            rightMainArrow.style.display = 'block';
+          }
+
+          if (currentIndex === 0) {
+            leftMainArrow.classList.add('disabled');
+          } else {
+            leftMainArrow.classList.remove('disabled');
+          }
+
+          if (currentIndex === thumbImages.length - 1) {
+            rightMainArrow.classList.add('disabled');
+          } else {
+            rightMainArrow.classList.remove('disabled');
+          }
+        };
 
         leftMainArrow.addEventListener('click', () => {
-          updateMainImage(currentIndex - 1);
-          thumbImagesWrapper.scrollBy({
-            left: -100,
-            behavior: 'smooth'
-          });
+          if (currentIndex > 0) {
+            updateMainImage(currentIndex - 1);
+          }
         });
 
         rightMainArrow.addEventListener('click', () => {
-          updateMainImage(currentIndex + 1);
-          thumbImagesWrapper.scrollBy({
-            left: 100,
-            behavior: 'smooth'
-          });
+          if (currentIndex < thumbImages.length - 1) {
+            updateMainImage(currentIndex + 1);
+          }
         });
+
+        updateArrowsVisibility();
       });

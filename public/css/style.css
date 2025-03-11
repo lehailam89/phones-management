@@ -399,6 +399,10 @@ header {
     transform: scale(1.03);
   }
   
+  .home-image-description {
+    height: 400px !important;  
+    border-radius: 8px;
+  }
 /* End Page Home Client */
 
 /* Show Alert Client */
@@ -706,23 +710,22 @@ header {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    z-index: 1;
+    z-index: 999;
 }
 
-.left-arrow {
-    left: -10px;
+.thumb-arrow.left-arrow {
+    left: 0;
 }
 
-.right-arrow {
-    right: -10px;
+.thumb-arrow.right-arrow {
+    right: 0;
 }
 /* End Ảnh mô tả sản phẩm */
 
-/* Swiper Style */
 /* Swiper styles */
 .swiper-container {
     width: 100%;
-    height: 400px;
+    height: 100px;
     overflow: hidden; /* Ẩn thanh trượt ngang */
     position: relative; /* Đảm bảo các nút điều hướng nằm trong phần tử này */
 }
@@ -758,4 +761,29 @@ header {
 .swiper-button-prev {
     color: #991B1B!important;
 }
+.main-arrow {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+}
+
+.main-arrow.left-main-arrow {
+    left: 0;
+}
+
+.main-arrow.right-main-arrow {
+    right: 0;
+}
+
+.main-arrow.disabled {
+    opacity: 0;
+    cursor: not-allowed;
+}
+
 /* End Swiper Style  */
+
