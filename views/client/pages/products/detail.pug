@@ -7,11 +7,6 @@ block main
 
   .product-detail
     .container.my-5
-      //- button(
-      //-   class="btn btn-secondary"
-      //-   button-go-back
-      //-   style="margin-bottom: 20px"
-      //-   ) Trở lại
       .row
         .detail-phone 
           .inner-thumb
@@ -63,12 +58,65 @@ block main
               class="btn btn-success btn-block"
             ) Thêm vào giỏ hàng
 
-
     .container.my-5
       .row
         .col-12
           +box-head("Mô tả sản phẩm")
           .inner-desc !{product.description}
+
+    .container.my-5
+      .row
+        .col-12
+          +box-head("Bình luận")
+          
+          // Form bình luận
+          if (user)
+            form.comment-form.mb-4(action=`/products/detail/${product._id}/comments` method="POST")
+              .form-group
+                label(for="content") 
+                  i.fa.fa-pen.mr-2
+                  | Viết bình luận của bạn
+                textarea.form-control(name="content" id="content" rows="3" placeholder="Chia sẻ suy nghĩ của bạn về sản phẩm này..." required)
+              button.btn.btn-primary.mt-2(type="submit")
+                i.fa.fa-paper-plane.mr-2
+                | Gửi bình luận
+          else
+            .alert.alert-info.mb-4
+              i.fa.fa-info-circle.mr-2
+              | Bạn cần 
+              a(href="/user/login") đăng nhập 
+              | để bình luận về sản phẩm này.
+
+          // Hiển thị danh sách bình luận
+          .comment-section.my-4
+            h5.comment-counter.mb-3
+              i.fa.fa-comments.mr-2
+              | Tất cả bình luận (#{product.comments.length})
+            
+            if (product.comments.length > 0)
+              // Sắp xếp bình luận mới nhất lên trên
+              - const sortedComments = [...product.comments].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+              .comment-list
+                each comment in sortedComments
+                  .comment-item.mb-4
+                    .comment-header.d-flex.justify-content-between.align-items-center
+                      .user-info
+                        if comment.user
+                          i.fa.fa-user-circle.mr-2
+                          strong.text-primary #{comment.user.fullName}
+                        else
+                          i.fa.fa-user-circle.mr-2
+                          strong.text-secondary Người dùng ẩn danh
+                      small.text-muted
+                        i.fa.fa-clock.mr-1
+                        | #{new Date(comment.createdAt).toLocaleString('vi-VN')}
+                    .comment-content.mt-2.p-3.border.rounded.bg-light
+                      | #{comment.content}
+            else
+              .alert.alert-light.text-center.py-4.border
+                i.fa.fa-comment-slash.fa-2x.mb-3.text-muted
+                p.mb-0 Chưa có bình luận nào cho sản phẩm này.
+                p.mb-0 Hãy là người đầu tiên bình luận!
 
     // Thêm các liên kết CSS và JS của Swiper
     link(rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css")

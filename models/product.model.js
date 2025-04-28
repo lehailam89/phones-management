@@ -3,6 +3,21 @@ const slug = require("mongoose-slug-updater");
 
 mongoose.plugin(slug);
 
+const commentSchema = new mongoose.Schema({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    content: {
+        type: String,
+        required: true
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
+});
 
 const productSchema = new mongoose.Schema({
     title: String, //Sản phẩm 1
@@ -45,7 +60,8 @@ const productSchema = new mongoose.Schema({
     deletedBy: {
         account_id: String,
         deletedAt: Date
-    }
+    },
+    comments: [commentSchema] // Thêm trường comments
 },
 {
     timestamps: true

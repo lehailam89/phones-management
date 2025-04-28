@@ -15,5 +15,7 @@ module.exports.requireAuth = async (req, res, next) => {
         return;
     }
 
+    req.user = user; // Thêm dòng này để lưu thông tin người dùng vào req.user
+    res.locals.user = user; // Thêm dòng này để lưu thông tin người dùng vào biến cục bộ
     next();
 }

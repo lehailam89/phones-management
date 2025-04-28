@@ -2,6 +2,7 @@ const Product = require("../../models/product.model");
 const ProductCategory = require("../../models/product-category.model");
 const productsHelper = require("../../helpers/products.js");
 const paginationHelper = require("../../helpers/pagination.js");
+const Account = require('../../models/account.model');
 
 //[GET] /products
 module.exports.index = async (req, res) => {
@@ -106,7 +107,7 @@ module.exports.detail = async (req, res) => {
             slug: slug,
             deleted: false,
             status: "active"
-        })
+        }).populate('comments.user', 'fullName'); // Sử dụng populate để lấy thông tin người dùng
 
         if (product.product_category_id) {
             const category = await ProductCategory.findOne({
@@ -132,3 +133,31 @@ module.exports.detail = async (req, res) => {
     }
 
 }
+
+module.exports.addComment = async (req, res) => {
+    try {
+        const productId = req.params.id;
+        const { content } = req.body;
+
+        const product = await Product.findById(productId);
+        if (!product) {
+            req.flash('error', 'Sản phẩm không tồn tại');
+            return res.redirect('back');
+        }
+
+        const comment = {
+            user: req.user._id,
+            content: content
+        };
+
+        product.comments.push(comment);
+        await product.save();
+
+        req.flash('success', 'Bình luận thành công');
+        res.redirect(`/products/detail/${product.slug}`);
+    } catch (error) {
+        console.error(error);
+        req.flash('error', 'Có lỗi xảy ra');
+        res.redirect('back');
+    }
+};
