@@ -1,0 +1,82 @@
+extends ../../layouts/default.pug 
+include ../../mixins/alert.pug
+
+block main
+    if(role.permissions.includes('posts_create'))
+        +alert-error(5000)
+        +alert-success(5000)
+
+        h1(class="mb-4") Thêm mới bài viết 
+
+        form(
+            action=`${prefixAdmin}/posts/create`
+            method="POST"
+            enctype="multipart/form-data"
+        )
+            div(class="form-group")
+                label(for="title") Tiêu đề 
+                input(
+                    type="text"
+                    class="form-control"
+                    id="title"
+                    name="title"
+                    placeholder="Nhập tiêu đề bài viết"
+                )
+            
+            div(
+                class="form-group mt-3"
+                upload-image
+            )
+                label(for="thumbnail") Ảnh đại diện
+                input(
+                    type="file"
+                    class="form-control-file"
+                    id="thumbnail"
+                    name="thumbnail"
+                    accept="image/*" 
+                    upload-image-input  
+                )
+                img(
+                    src=""
+                    class="image-preview"
+                    upload-image-preview
+                )
+            
+            div(class="form-group mt-3")
+                label(for="content") Nội dung
+                textarea(
+                    class="form-control textarea-mce"
+                    id="content"
+                    name="content"
+                    rows="10"
+                    placeholder="Nhập nội dung bài viết"
+                )
+            
+            div(class="form-group mt-3 form-check form-check-inline")
+                input(
+                    type="radio"
+                    class="form-check-input"
+                    id="statusActive"
+                    name="status"
+                    value="active"
+                    checked
+                )
+                label(for="statusActive" class="form-check-label") Hoạt động
+            
+            div(class="form-group form-check form-check-inline")
+                input(
+                    type="radio"
+                    class="form-check-input"
+                    id="statusInActive"
+                    name="status"
+                    value="inactive"    
+                )
+                label(for="statusInActive" class="form-check-label") Dừng hoạt động
+            
+            div(class="form-group mt-3")
+                button(
+                    type="submit"
+                    class="btn btn-primary"
+                ) Thêm mới
+
+        script(src="/admin/js/tinymce-config.js")

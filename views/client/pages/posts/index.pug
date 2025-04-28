@@ -1,0 +1,23 @@
+extends ../../layouts/default.pug
+include ../../mixins/pagination.pug
+
+block main
+    section.posts-section.container.my-5
+        h1.text-center.mb-5 Bài viết
+
+        if posts.length > 0
+            .row
+                each post in posts
+                    .col-md-4.mb-4
+                        .card.h-100
+                            img.card-img-top(src=post.thumbnail, alt=post.title, style="height: 200px; object-fit: cover;")
+                            .card-body
+                                h2.card-title.h5= post.title
+                                p.card-text.text-muted.small Ngày đăng: #{new Date(post.createdAt).toLocaleDateString('vi-VN')}
+                                p.card-text.text-muted.small Tác giả: #{post.createdBy.accountFullName} 
+                                a.btn.btn-primary.mt-2(href=`/posts/detail/${post.slug}`) Đọc thêm
+            
+            .mt-4
+                +pagination(pagination)
+        else
+            .alert.alert-info.text-center Không có bài viết nào.

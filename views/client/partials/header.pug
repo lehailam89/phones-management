@@ -44,6 +44,8 @@ header.header
                                 i(class="fa-solid fa-cart-shopping") 
                                 div(class="mini-cart-quantity")
                                     | #{miniCart ? miniCart.totalQuantity : "0"}
+                        li
+                            a(href="/posts") Bài viết
                         if(user)
                             li 
                                 a(href="/user/info") #{user.fullName}

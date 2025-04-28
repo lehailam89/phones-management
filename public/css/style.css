@@ -787,3 +787,49 @@ header {
 
 /* End Swiper Style  */
 
+/* Blog Styles */
+.posts-section .card {
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.posts-section .card:hover {
+    transform: translateY(-5px);
+}
+
+.post-detail .post-content {
+    line-height: 1.8;
+    font-size: 1.1rem;
+}
+
+.post-detail .post-content img {
+    max-width: 100%;
+    height: auto;
+    margin: 15px 0;
+}
+
+.post-detail .post-content h2,
+.post-detail .post-content h3 {
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+.post-detail .post-content p {
+    margin-bottom: 20px;
+}
+
+.media {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.media img {
+    margin-right: 10px;
+}
+
+.media-body {
+    flex: 1;
+}
+/* End Blog Styles */
+

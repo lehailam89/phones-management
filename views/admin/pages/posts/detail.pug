@@ -1,0 +1,53 @@
+extends ../../layouts/default.pug 
+
+block main
+    if(role.permissions.includes('posts_view'))
+        h1(class="mb-4") Chi tiết bài viết
+
+        div(class="card mb-3")
+            div(class="card-header font-weight-bold") Thông tin bài viết
+            div(class="card-body")
+                div(class="row")
+                    div(class="col-md-6")
+                        p 
+                            strong Tiêu đề: 
+                            span #{post.title}
+                        p 
+                            strong Trạng thái: 
+                            if post.status == "active" 
+                                span(class="badge bg-success") Hoạt động
+                            else
+                                span(class="badge bg-danger") Không hoạt động
+                    div(class="col-md-6")
+                        if post.thumbnail
+                            img(src=post.thumbnail, alt=post.title, class="img-fluid", style="max-height: 150px;")
+
+        div(class="card mb-3")
+            div(class="card-header font-weight-bold") Nội dung
+            div(class="card-body")
+                div !{post.content}
+
+        div(class="card mb-3")
+            div(class="card-header font-weight-bold") Bình luận (#{post.comments ? post.comments.length : 0})
+            div(class="card-body")
+                if post.comments && post.comments.length > 0
+                    each comment in post.comments
+                        div(class="border-bottom pb-2 mb-2")
+                            p 
+                                strong Người bình luận: 
+                                if comment.fullName
+                                    span #{comment.fullName}
+                                else 
+                                    span Người dùng
+                            p 
+                                strong Thời gian: 
+                                span #{new Date(comment.createdAt).toLocaleString('vi-VN')}
+                            p 
+                                strong Nội dung: 
+                                span #{comment.content}
+                else
+                    p Chưa có bình luận nào.
+
+        div(class="mt-3")
+            a(href=`${prefixAdmin}/posts`, class="btn btn-secondary") Quay lại
+            a(href=`${prefixAdmin}/posts/edit/${post.id}`, class="btn btn-primary ms-2") Chỉnh sửa

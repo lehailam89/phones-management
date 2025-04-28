@@ -1,0 +1,157 @@
+extends ../../layouts/default.pug
+include ../../mixins/filter-status.pug
+include ../../mixins/search.pug
+include ../../mixins/pagination.pug
+include ../../mixins/alert.pug
+
+block main
+    +alert-success(5000)
+    +alert-error(5000)
+
+    h1(class="mb-4") Danh sách bài viết
+
+    .card.mb-3
+        .card-header Bộ lọc và Tìm kiếm
+        .card-body
+            .row
+                .col-6
+                    +filter-status(filterStatus)
+                .col-6
+                    +search(keyword)
+
+    //- .card.mb-3
+    //-     .card-header Sắp xếp
+    //-     .card-body
+    //-         div(sort)
+    //-             select(class="form-select" sort-select)
+    //-                 option(value="position-desc") Vị trí (Cao - Thấp)
+    //-                 option(value="position-asc") Vị trí (Thấp - Cao)
+    //-                 option(value="title-asc") Tên (A-Z)
+    //-                 option(value="title-desc") Tên (Z-A)
+    //-                 option(value="price-asc") Giá (Thấp - Cao)
+    //-                 option(value="price-desc") Giá (Cao - Thấp)
+    //-             button(class="btn btn-danger mt-2" sort-clear) Xóa sắp xếp
+
+    .card.mb-3
+        .card-header Hành động
+        .card-body
+            .row 
+                .col-8 
+                    form(
+                        action=`${prefixAdmin}/posts/change-multi?_method=PATCH`
+                        method="POST"
+                        id="form-change-multi"
+                    )
+                        div(class="d-flex align-items-center")
+                            div(class="col-8")
+                                select(
+                                    class="form-select"
+                                    id="select-change-multi"
+                                    name="type"
+                                )
+                                    option(value="") -- Chọn hành động --
+                                    option(value="active") Hoạt động
+                                    option(value="inactive") Dừng hoạt động
+                                    option(value="delete-all") Xóa tất cả
+                            div(class="col-4")
+                                button(
+                                    disabled
+                                    type="submit"
+                                    class="btn btn-primary ms-2"
+                                    id="button-change-multi"
+                                ) Áp dụng
+                            input(type="hidden" name="ids" id="ids-change-multi" value="")
+
+                .col-4
+                    a(
+                        href=`${prefixAdmin}/posts/create`
+                        class="btn btn-primary"
+                    ) + Thêm mới
+
+    .card.mb-3
+        .card-header Danh sách
+        .card-body
+            table(
+                class="table table-hover table-sm"
+                checkbox-multi
+            )
+                thead
+                    tr
+                        th
+                            input(
+                                type="checkbox"
+                                name="checkall"
+                            )
+                        th STT
+                        th Ảnh
+                        th Tiêu đề
+                        th Trạng thái
+                        th Người tạo
+                        th Hành động
+                tbody
+                    if(posts.length > 0)
+                        each item, index in posts
+                            tr
+                                td
+                                    input(
+                                        type="checkbox"
+                                        name="id"
+                                        value=item.id
+                                    )
+                                td #{pagination.limitItems * (pagination.currentPage - 1) + index + 1}
+                                td
+                                    img(
+                                        src=item.thumbnail
+                                        alt=item.title
+                                        width="100px"
+                                        height="auto"
+                                    )
+                                td #{item.title}
+                                td
+                                    - const badgeClass = item.status === "active" ? "success" : "danger"
+                                    - const text = item.status === "active" ? "Hoạt động" : "Dừng hoạt động"
+                                    a(
+                                        href="javascript:;"
+                                        class=`badge bg-${badgeClass} status-change text-white`
+                                        data-status=item.status === "active" ? "inactive" : "active"
+                                        data-id=item.id
+                                    ) #{text}
+                                td
+                                    if(item.createdBy && item.createdBy.accountFullName)
+                                        p #{item.createdBy.accountFullName}
+                                    else
+                                        p Chưa xác định
+                                td
+                                    a(class="btn btn-warning btn-sm" href=`${prefixAdmin}/posts/edit/${item.id}`) Sửa
+                                    a(
+                                      class="btn btn-danger btn-sm ms-1"
+                                      href=`javascript:;`
+                                      button-delete
+                                      data-id=item.id
+                                      data-name=item.title
+                                    ) Xóa
+                                    a(
+                                      class="btn btn-info btn-sm ms-1"
+                                      href=`${prefixAdmin}/posts/detail/${item.id}`
+                                    ) Chi tiết
+                    else
+                        tr
+                            td(colspan="7" class="text-center") Không có dữ liệu
+
+            +pagination(pagination)
+
+    form(
+        action=""
+        method="POST"
+        id="form-delete-item"
+        data-path=`${prefixAdmin}/posts/delete`
+    )
+
+    form(
+        action=""
+        method="POST"
+        id="form-change-status"
+        data-path=`${prefixAdmin}/posts/change-status`
+    )
+
+    script(src="/admin/js/product.js")
