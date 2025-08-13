@@ -65,6 +65,7 @@ module.exports.order = async (req, res) => {
 
     const objectOrder = {
         cart_id: cartId,
+        user_id: res.locals.user ? res.locals.user.id : null, // Lưu user_id
         userInfo: userInfo,
         products: products
     };

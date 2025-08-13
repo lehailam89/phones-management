@@ -4,6 +4,7 @@ const ForgotPassword = require('../../models/forgot-password.model.js')
 const generateHelper = require("../../helpers/generate.js");
 const sendMailHelper = require("../../helpers/sendMail.js"); 
 const Cart = require("../../models/cart.model.js"); 
+const Order = require("../../models/order.model");
 
 //[GET] /user/register
 module.exports.register = (req, res) => {
@@ -193,7 +194,22 @@ module.exports.resetPasswordPost = async (req, res) => {
 
 //[GET] /user/info
 module.exports.info = async (req, res) => {
-    res.render("client/pages/user/info", {
-        title: "Thông tin tài khoản"
-    });
+    try {
+        const userId = res.locals.user.id;
+        
+        // Đếm số đơn hàng của user
+        const orderCount = await Order.countDocuments({
+            user_id: userId
+        });
+
+        res.render("client/pages/user/info", {
+            title: "Thông tin tài khoản",
+            orderCount: orderCount
+        });
+    } catch (error) {
+        res.render("client/pages/user/info", {
+            title: "Thông tin tài khoản",
+            orderCount: 0
+        });
+    }
 }

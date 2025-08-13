@@ -1,0 +1,85 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+
+block main
+    +alert-success(5000)
+    +alert-error(5000)
+
+    h1(class="mb-4") Chi tiết đơn hàng
+
+    .card.mb-3
+        .card-header Thông tin đơn hàng
+        .card-body
+            .row
+                .col-md-6
+                    p
+                        strong Mã đơn hàng: 
+                        span #{order._id}
+                    p
+                        strong Ngày đặt: 
+                        span #{new Date(order.createdAt).toLocaleDateString('vi-VN')}
+                    p
+                        strong Giờ đặt: 
+                        span #{new Date(order.createdAt).toLocaleTimeString('vi-VN')}
+                        
+                .col-md-6
+                    p
+                        strong Họ tên khách hàng: 
+                        span #{order.userInfo.fullName}
+                    p
+                        strong Số điện thoại: 
+                        span #{order.userInfo.phone}
+                    p
+                        strong Địa chỉ: 
+                        span #{order.userInfo.address}
+
+    .card.mb-3
+        .card-header Sản phẩm đã đặt
+        .card-body
+            table(class="table table-hover table-sm")
+                thead
+                    tr
+                        th STT
+                        th Hình ảnh
+                        th Tên sản phẩm
+                        th Đơn giá
+                        th Số lượng
+                        th Thành tiền
+                tbody
+                    each product, index in order.products
+                        tr
+                            td #{index + 1}
+                            td
+                                if product.productInfo && product.productInfo.thumbnail
+                                    img(
+                                        src=product.productInfo.thumbnail
+                                        alt=product.productInfo.title
+                                        width="60px"
+                                        height="auto"
+                                    )
+                                else
+                                    span Không có ảnh
+                            td 
+                                if product.productInfo
+                                    span #{product.productInfo.title}
+                                else
+                                    em Sản phẩm không tồn tại
+                            td #{product.priceNew ? product.priceNew.toLocaleString('vi-VN') : 0}đ
+                            td #{product.quantity}
+                            td #{(product.totalPrice || 0).toLocaleString('vi-VN')}đ
+
+            .row.mt-3
+                .col-12.text-right
+                    h4
+                        strong Tổng cộng: #{order.totalPrice.toLocaleString('vi-VN')}đ
+
+    .card.mb-3
+        .card-header Hành động
+        .card-body
+            a(
+                class="btn btn-secondary"
+                href=`${prefixAdmin}/orders`
+            ) Quay lại danh sách
+            button(
+                class="btn btn-danger ml-2"
+            ) Xóa đơn hàng

@@ -1,0 +1,88 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+
+block main
+    +alert-success(5000)
+    +alert-error(5000)
+
+    .container.my-5
+        .row
+            .col-12
+                .card.shadow-sm.border-0
+                    .card-header.text-white.py-3(style="background-color: #DB0E0E;")
+                        h4.mb-0.d-flex.align-items-center
+                            i.fa-solid.fa-file-invoice.me-3
+                            | Chi tiết đơn hàng #{order._id}
+
+                    .card-body.p-4
+                        .row.mb-4
+                            .col-md-6
+                                .info-section
+                                    h5.mb-3(style="color: #DB0E0E;") Thông tin đơn hàng
+                                    p.mb-2
+                                        strong Mã đơn hàng: 
+                                        span #{order._id}
+                                    p.mb-2
+                                        strong Ngày đặt: 
+                                        span #{new Date(order.createdAt).toLocaleString('vi-VN')}
+                            
+                            .col-md-6
+                                .info-section
+                                    h5.mb-3(style="color: #DB0E0E;") Thông tin người nhận
+                                    p.mb-2
+                                        strong Họ tên: 
+                                        span #{order.userInfo.fullName}
+                                    p.mb-2
+                                        strong Số điện thoại: 
+                                        span #{order.userInfo.phone}
+                                    p.mb-2
+                                        strong Địa chỉ: 
+                                        span #{order.userInfo.address}
+
+                        hr
+
+                        .products-section
+                            h5.mb-3(style="color: #DB0E0E;") Sản phẩm đã mua
+                            .table-responsive
+                                table.table.table-bordered
+                                    thead.table-light
+                                        tr
+                                            th(width="10%") STT
+                                            th(width="15%") Hình ảnh
+                                            th(width="35%") Tên sản phẩm
+                                            th(width="15%") Đơn giá
+                                            th(width="10%") Số lượng
+                                            th(width="15%") Thành tiền
+                                    tbody
+                                        each product, index in order.products
+                                            tr
+                                                td.text-center #{index + 1}
+                                                td.text-center
+                                                    if product.productInfo && product.productInfo.thumbnail
+                                                        img.rounded(src=product.productInfo.thumbnail, alt=product.productInfo.title, style="width: 60px; height: 60px; object-fit: cover;")
+                                                    else
+                                                        .bg-light.rounded.d-flex.align-items-center.justify-content-center(style="width: 60px; height: 60px;")
+                                                            i.fa-solid.fa-image.text-muted
+                                                td
+                                                    if product.productInfo
+                                                        strong= product.productInfo.title
+                                                    else
+                                                        em Sản phẩm không tồn tại
+                                                td.text-end #{product.priceNew ? product.priceNew.toLocaleString('vi-VN') : 0} $
+                                                td.text-center #{product.quantity}
+                                                td.text-end.text-danger.fw-bold #{(product.totalPrice || 0).toLocaleString('vi-VN')} $
+
+                        hr
+
+                        .total-section.text-end
+                            h4.text-danger
+                                strong Tổng cộng: #{order.totalPrice.toLocaleString('vi-VN')} $
+
+        .row.mt-3
+            .col-12.text-center
+                a.btn.btn-outline-secondary.me-3(href="/user/orders")
+                    i.fa-solid.fa-arrow-left.me-2
+                    | Quay lại danh sách
+                a.btn.text-white(href="/products", style="background-color: #DB0E0E;")
+                    i.fa-solid.fa-shopping-bag.me-2
+                    | Tiếp tục mua sắm

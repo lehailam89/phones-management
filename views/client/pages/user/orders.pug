@@ -1,0 +1,59 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+
+block main
+    +alert-success(5000)
+    +alert-error(5000)
+
+    .container.my-5
+        .row
+            .col-12
+                .card.shadow-sm.border-0
+                    .card-header.text-white.py-3(style="background-color: #DB0E0E;")
+                        h4.mb-0.d-flex.align-items-center
+                            i.fa-solid.fa-shopping-bag.me-3
+                            | Lịch sử mua hàng
+
+                    .card-body.p-4
+                        if orders && orders.length > 0
+                            each order in orders
+                                .order-item.border.rounded.mb-4.p-3
+                                    .row.align-items-center
+                                        .col-md-8
+                                            .order-info
+                                                h5.mb-2.d-flex.align-items-center
+                                                    i.fa-solid.fa-receipt.me-2(style="color: #DB0E0E;")
+                                                    | Đơn hàng #{order._id}
+                                                p.text-muted.mb-1
+                                                    i.fa-solid.fa-calendar.me-2
+                                                    | Ngày đặt: #{new Date(order.createdAt).toLocaleDateString('vi-VN')}
+                                                p.text-muted.mb-1
+                                                    i.fa-solid.fa-user.me-2
+                                                    | Người nhận: #{order.userInfo.fullName}
+                                                p.text-muted.mb-0
+                                                    i.fa-solid.fa-phone.me-2
+                                                    | SĐT: #{order.userInfo.phone}
+                                        
+                                        .col-md-4.text-end
+                                            .order-summary
+                                                p.mb-2
+                                                    strong Tổng: 
+                                                    span.text-danger.fs-5 #{order.totalPrice.toLocaleString('vi-VN')} $
+                                                a.btn.btn-outline-primary.btn-sm(href=`/user/orders/detail/${order._id}`)
+                                                    i.fa-solid.fa-eye.me-1
+                                                    | Xem chi tiết
+                        else
+                            .text-center.py-5
+                                i.fa-solid.fa-shopping-cart.fa-3x.text-muted.mb-3
+                                h5.text-muted Chưa có đơn hàng nào
+                                p.text-muted Bạn chưa thực hiện đơn hàng nào
+                                a.btn.text-white(href="/products", style="background-color: #DB0E0E;")
+                                    i.fa-solid.fa-shopping-bag.me-2
+                                    | Mua sắm ngay
+
+        .row.mt-3
+            .col-12.text-center
+                a.btn.btn-outline-secondary(href="/user/info")
+                    i.fa-solid.fa-arrow-left.me-2
+                    | Quay lại thông tin tài khoản
+                   

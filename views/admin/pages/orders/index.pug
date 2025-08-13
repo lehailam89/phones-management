@@ -4,26 +4,37 @@ include ../../mixins/alert.pug
 block main
   +alert-success(5000)
   +alert-error(5000)
-  .container.my-3
-    .row
-      .col-12
-        h1 Quản lý đơn hàng
-    .row
-      .col-12
-        if(orders.length > 0)
-          table(class="table table-bordered")
-            thead
+  
+  h1(class="mb-4") Quản lý đơn hàng
+
+  .card.mb-3
+    .card-header Danh sách
+    .card-body
+      if(orders.length > 0)
+        table(class="table table-hover table-sm")
+          thead
+            tr
+              th STT
+              th Mã đơn hàng
+              th Ngày đặt
+              th Tổng tiền
+              th Người đặt
+              th Hành động
+          tbody
+            each order, index in orders
               tr
-                th Mã đơn hàng
-                th Ngày đặt
-                th Tổng tiền
-                th Người đặt
-            tbody
-              each order in orders
-                tr
-                  td #{order._id}
-                  td #{order.createdAt.toLocaleDateString()}
-                  td #{order.totalPrice}$
-                  td #{order.userInfo.fullName}
-        else
-          p Không có đơn hàng nào.
+                td #{index + 1}
+                td #{order._id}
+                td #{new Date(order.createdAt).toLocaleDateString('vi-VN')}
+                td #{order.totalPrice.toLocaleString('vi-VN')} $
+                td #{order.userInfo.fullName}
+                td
+                  a(
+                    class="btn btn-secondary btn-sm"
+                    href=`${prefixAdmin}/orders/detail/${order._id}`
+                  ) Chi tiết
+                  button(
+                    class="btn btn-danger btn-sm ml-1"
+                  ) Xóa
+      else
+        p Không có đơn hàng nào.

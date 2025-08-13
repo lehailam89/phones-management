@@ -60,6 +60,9 @@ block main
                         .row.mt-4
                             .col-12.text-center
                                 .action-buttons
+                                    a.btn.px-4.me-3.text-white(href="/user/orders", style="background-color: #DB0E0E; border-color: #DB0E0E; margin-right: 10px")
+                                        i.fa-solid.fa-shopping-bag.me-2
+                                        | Lịch sử mua hàng
                                     a.btn.px-4.me-3.text-white(href="/user/edit", style="background-color: #DB0E0E; border-color: #DB0E0E; margin-right: 10px")
                                         i.fa-solid.fa-edit.me-2
                                         | Chỉnh sửa thông tin
@@ -84,7 +87,7 @@ block main
                                 .stat-item.p-3.border-end
                                     .stat-icon.mb-2
                                         i.fa-solid.fa-shopping-cart.fa-2x(style="color: #DB0E0E;")
-                                    h4.mb-1(style="color: #DB0E0E;") 0
+                                    h4.mb-1(style="color: #DB0E0E;") #{orderCount || 0}
                                     p.text-muted.small Đơn hàng
                             .col-md-4
                                 .stat-item.p-3.border-end
