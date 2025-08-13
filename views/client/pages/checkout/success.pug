@@ -1,64 +1,166 @@
 extends ../../layouts/default.pug
-include ../../mixins/box-head.pug
+include ../../mixins/alert.pug
 
 block main
-  .container.my-3
-    .row
-      .col-12
-        +box-head("Đặt hàng thành công")
+  +alert-success(5000)
+  +alert-error(5000)
+  
+  .container.my-5
+    .row.justify-content-center
+      .col-lg-10
+        .card.shadow-sm.border-0.mb-4
+          .card-header.text-white.py-3(style="background-color: #28a745;")
+            h4.mb-0.d-flex.align-items-center.justify-content-center
+              i.fa-solid.fa-check-circle.me-3
+              | Đặt hàng thành công!
 
-    .row
-      .col-12
-        div(class="alert alert-success")
-          | Chúc mừng bạn đã đặt hàng thành công! Chúng tôi sẽ xử lý đơn hàng trong thời gian sớm nhất.
+          .card-body.p-4
+            .text-center.py-4
+              i.fa-solid.fa-check-circle.fa-5x.text-success.mb-3
+              h2.text-success.mb-3 Cảm ơn bạn đã đặt hàng!
+              p.text-muted.fs-5 Đơn hàng của bạn đã được tiếp nhận và đang được xử lý
+              .alert.alert-success.mt-4
+                i.fa-solid.fa-info-circle.me-2
+                | Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất để xác nhận đơn hàng
 
     if(order)
-      .row
-        .col-12
-          h4(class="mb-2") Thông tin cá nhân
-          table(class="table table-bordered")
-            tbody
-              tr
-                td Họ tên
-                td
-                  b #{order.userInfo.fullName}
-              tr
-                td Số điện thoại
-                td
-                  b #{order.userInfo.phone}
-              tr
-                td Địa chỉ
-                td
-                  b #{order.userInfo.address}
+      .row.justify-content-center.mt-4
+        .col-lg-5.mb-4
+          .card.shadow-sm.border-0
+            .card-header.bg-light.py-3
+              h5.mb-0(style="color: #DB0E0E;") Thông tin giao hàng
+            .card-body.p-4
+              .info-item.mb-3
+                .d-flex.align-items-center
+                  i.fa-solid.fa-user.me-3(style="color: #DB0E0E; width: 20px;")
+                  .info-content
+                    strong.d-block Họ và tên
+                    span= order.userInfo.fullName
+              
+              .info-item.mb-3
+                .d-flex.align-items-center
+                  i.fa-solid.fa-phone.me-3(style="color: #DB0E0E; width: 20px;")
+                  .info-content
+                    strong.d-block Số điện thoại
+                    span= order.userInfo.phone
+              
+              .info-item
+                .d-flex.align-items-start
+                  i.fa-solid.fa-map-marker-alt.me-3(style="color: #DB0E0E; width: 20px; margin-top: 2px;")
+                  .info-content
+                    strong.d-block Địa chỉ giao hàng
+                    span= order.userInfo.address
 
-      .row
-        .col-12
-          h4(class="mb-2") Thông tin đơn hàng
-          table(class="table table-bordered")
-            thead
-              tr
-                th STT
-                th Ảnh
-                th Tên
-                th Giá
-                th Số lượng
-                th Tổng tiền
-            tbody
-              if(order.products.length > 0)
-                each item, index in order.products
-                  tr
-                    td #{index + 1}
-                    td
-                      img(
-                        src=item.productInfo.thumbnail
-                        alt=item.productInfo.title
-                        width="80px"
-                      )
-                    td #{item.productInfo.title}
-                    td #{item.priceNew}$
-                    td #{item.quantity}
-                    td #{item.totalPrice}$
+        .col-lg-5.mb-4
+          .card.shadow-sm.border-0
+            .card-header.bg-light.py-3
+              h5.mb-0(style="color: #DB0E0E;") Thông tin đơn hàng
+            .card-body.p-4
+              .order-info.mb-3
+                .d-flex.align-items-center
+                  i.fa-solid.fa-receipt.me-3(style="color: #DB0E0E; width: 20px;")
+                  .info-content
+                    strong.d-block Mã đơn hàng
+                    code.bg-light.px-2.py-1.rounded= order._id
+              
+              .order-info.mb-3
+                .d-flex.align-items-center
+                  i.fa-solid.fa-calendar.me-3(style="color: #DB0E0E; width: 20px;")
+                  .info-content
+                    strong.d-block Thời gian đặt
+                    span= new Date(order.createdAt).toLocaleString('vi-VN')
+              
+              .order-info
+                .d-flex.align-items-center
+                  i.fa-solid.fa-money-bill-wave.me-3(style="color: #DB0E0E; width: 20px;")
+                  .info-content
+                    strong.d-block Tổng tiền
+                    span.text-danger.fs-5.fw-bold #{order.totalPrice.toLocaleString('vi-VN')}$
 
+      .row.justify-content-center.mt-4
+        .col-lg-10
+          .card.shadow-sm.border-0
+            .card-header.bg-light.py-3
+              h5.mb-0(style="color: #DB0E0E;") Chi tiết sản phẩm
+            .card-body.p-0
+              .table-responsive
+                table.table.table-hover.align-middle.mb-0
+                  thead.table-light
+                    tr
+                      th(width="8%") STT
+                      th(width="15%") Hình ảnh
+                      th(width="35%") Sản phẩm
+                      th(width="15%") Đơn giá
+                      th(width="12%") Số lượng
+                      th(width="15%") Thành tiền
+                  tbody
+                    if(order.products.length > 0)
+                      each item, index in order.products
+                        tr
+                          td.text-center.fw-bold #{index + 1}
+                          td.text-center
+                            img.rounded.shadow-sm(
+                              src=item.productInfo.thumbnail,
+                              alt=item.productInfo.title,
+                              style="width: 60px; height: 60px; object-fit: cover;"
+                            )
+                          td
+                            .d-flex.flex-column
+                              span.fw-bold= item.productInfo.title
+                              small.text-muted Mã SP: #{item.productInfo._id.toString().slice(-6).toUpperCase()}
+                          td.text-end
+                            span.fw-bold.text-primary #{item.priceNew.toLocaleString('vi-VN')}$
+                          td.text-center
+                            span.badge.bg-light.text-dark #{item.quantity}
+                          td.text-end
+                            span.fw-bold.text-danger #{item.totalPrice.toLocaleString('vi-VN')}$
 
-          if(order.products.length > 0)
-            h3(class="text-right") Tổng đơn hàng: #{order.totalPrice}$
+              .card-footer.bg-light.py-3
+                .row
+                  .col-md-8
+                  .col-md-4.text-end
+                    h4.mb-0
+                      strong.text-danger Tổng cộng: #{order.totalPrice.toLocaleString('vi-VN')}$
+
+    .row.mt-5
+      .col-12
+        .card.shadow-sm.border-0
+          .card-header.bg-light.py-3
+            h5.mb-0.d-flex.align-items-center
+              i.fa-solid.fa-gift.me-2.text-warning
+              | Chính sách hỗ trợ
+          .card-body
+            .row.text-center
+              .col-md-3
+                .d-flex.flex-column.align-items-center.p-3
+                  i.fa-solid.fa-truck.fa-2x.text-success.mb-2
+                  h6.text-success Giao hàng nhanh
+                  small.text-muted Giao hàng trong 24h
+              .col-md-3
+                .d-flex.flex-column.align-items-center.p-3
+                  i.fa-solid.fa-shield-alt.fa-2x.text-primary.mb-2
+                  h6.text-primary Bảo hành chính hãng
+                  small.text-muted 12 tháng toàn quốc
+              .col-md-3
+                .d-flex.flex-column.align-items-center.p-3
+                  i.fa-solid.fa-headset.fa-2x.text-warning.mb-2
+                  h6.text-warning Hỗ trợ 24/7
+                  small.text-muted Tư vấn nhiệt tình
+              .col-md-3
+                .d-flex.flex-column.align-items-center.p-3
+                  i.fa-solid.fa-undo.fa-2x.text-info.mb-2
+                  h6.text-info Đổi trả dễ dàng
+                  small.text-muted Trong vòng 7 ngày
+
+    .row.mt-4
+      .col-12.text-center
+        a.btn.text-white.px-4.py-2.me-3(
+          href="/products",
+          style="background-color: #DB0E0E; border-color: #DB0E0E;"
+        )
+          i.fa-solid.fa-shopping-bag.me-2
+          | Tiếp tục mua sắm
+        
+        a.btn.btn-outline-secondary.px-4.py-2(href="/")
+          i.fa-solid.fa-home.me-2
+          | Về trang chủ

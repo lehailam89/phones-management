@@ -45,7 +45,7 @@ block main
                             ) #{item.productInfo.title}
                             small.text-muted Mã SP: #{item.product_id.slice(-6).toUpperCase()}
                         td.text-end
-                          span.fw-bold.text-primary #{item.productInfo.priceNew.toLocaleString('vi-VN')}đ
+                          span.fw-bold.text-primary #{item.productInfo.priceNew.toLocaleString('vi-VN')} $
                         td.text-center
                           .quantity-controls.d-flex.align-items-center.justify-content-center
                             input.form-control.text-center(
@@ -58,7 +58,7 @@ block main
                               style="width: 70px;"
                             )
                         td.text-end
-                          span.fw-bold.text-danger.fs-5 #{item.totalPrice.toLocaleString('vi-VN')}đ
+                          span.fw-bold.text-danger.fs-5 #{item.totalPrice.toLocaleString('vi-VN')} $
                         td.text-center
                           a.btn.btn-outline-danger.btn-sm(
                             href=`/cart/delete/${item.product_id}`,
@@ -78,7 +78,7 @@ block main
                   .card.border-0.bg-light
                     .card-body.text-center
                       h5.text-muted.mb-2 Tổng đơn hàng
-                      h3.text-danger.fw-bold.mb-3 #{cartDetail.totalPrice.toLocaleString('vi-VN')}đ
+                      h3.text-danger.fw-bold.mb-3 #{cartDetail.totalPrice.toLocaleString('vi-VN')} $
                       a.btn.text-white.px-4.py-2(
                         href="/checkout",
                         style="background-color: #DB0E0E; border-color: #DB0E0E;"
@@ -112,7 +112,7 @@ block main
                   .d-flex.flex-column.align-items-center.p-3
                     i.fa-solid.fa-truck.fa-2x.text-success.mb-2
                     h6.text-success Miễn phí vận chuyển
-                    small.text-muted Đơn hàng từ 500.000đ
+                    small.text-muted Đơn hàng từ 500 $
                 .col-md-4
                   .d-flex.flex-column.align-items-center.p-3
                     i.fa-solid.fa-shield-alt.fa-2x.text-primary.mb-2
