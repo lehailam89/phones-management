@@ -64,21 +64,21 @@ block main
                                     span #{product.productInfo.title}
                                 else
                                     em Sản phẩm không tồn tại
-                            td #{product.priceNew ? product.priceNew.toLocaleString('vi-VN') : 0}đ
+                            td #{product.priceNew ? product.priceNew.toLocaleString('vi-VN') : 0} $
                             td #{product.quantity}
-                            td #{(product.totalPrice || 0).toLocaleString('vi-VN')}đ
+                            td #{(product.totalPrice || 0).toLocaleString('vi-VN')} $   
 
             .row.mt-3
                 .col-12.text-right
                     h4
-                        strong Tổng cộng: #{order.totalPrice.toLocaleString('vi-VN')}đ
+                        strong Tổng cộng: #{order.totalPrice.toLocaleString('vi-VN')} $
 
     .card.mb-3
         .card-header Hành động
         .card-body
             a(
                 class="btn btn-secondary"
-                href=`${prefixAdmin}/orders`
+                href=`${prefixAdmin}/user/orders`
             ) Quay lại danh sách
             button(
                 class="btn btn-danger ml-2"

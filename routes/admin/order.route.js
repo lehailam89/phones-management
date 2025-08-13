@@ -5,6 +5,6 @@ const controller = require('../../controllers/admin/order.controller.js');
 const authMiddleware = require("../../middlewares/admin/auth.middleware.js");
 
 router.get("/", authMiddleware.requireAuth, controller.index);
-router.get("/user/detail/:id", authMiddleware.requireAuth, controller.detail);
+router.get("/detail/:id", authMiddleware.requireAuth, controller.detail);
 
 module.exports = router;

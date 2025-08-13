@@ -40,7 +40,7 @@ module.exports.detail = async (req, res) => {
         // Tính tổng giá trị đơn hàng
         order.totalPrice = order.products.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
 
-        res.render("admin/pages/orders/detail", {
+        res.render("admin/pages/orders/detail.pug", {
             pageTitle: "Chi tiết đơn hàng",
             order: order
         });
