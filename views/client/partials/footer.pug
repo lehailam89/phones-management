@@ -1,2 +1,62 @@
-footer.footer 
-    | Copyright By #{settingGeneral.copyright} 2024
+footer.footer
+    .container
+        .row
+            .col-md-4
+                .footer-section
+                    if settingGeneral && settingGeneral.logo
+                        .footer-logo.mb-3
+                            img(src=settingGeneral.logo, alt=settingGeneral.websiteName || "Logo", style="max-height: 60px; width: auto;")
+                    if settingGeneral && settingGeneral.websiteName
+                        h5.text-white.mb-3= settingGeneral.websiteName
+                    else
+                        h5.text-white.mb-3 Cửa hàng điện thoại
+                    p.text-light Chuyên cung cấp các sản phẩm điện thoại chính hãng với giá cả cạnh tranh nhất thị trường   
+            
+            .col-md-4
+                .footer-section
+                    h5.text-white.mb-3 Thông tin liên hệ
+                    if settingGeneral && settingGeneral.address
+                        .contact-item(style="margin-bottom: 15px; display: block;")
+                            i.fa-solid.fa-location-dot.text-light(style="margin-right: 10px;")
+                            span.text-light= settingGeneral.address
+                    if settingGeneral && settingGeneral.phone
+                        .contact-item(style="margin-bottom: 15px; display: block;")
+                            i.fa-solid.fa-phone.text-light(style="margin-right: 10px;")
+                            a.text-light(href=`tel:${settingGeneral.phone}`)= settingGeneral.phone
+                    if settingGeneral && settingGeneral.email
+                        .contact-item(style="margin-bottom: 15px; display: block;")
+                            i.fa-solid.fa-envelope.text-light(style="margin-right: 10px;")
+                            a.text-light(href=`mailto:${settingGeneral.email}`)= settingGeneral.email
+            
+            .col-md-4
+                .footer-section
+                    h5.text-white.mb-3 Liên kết nhanh
+                    ul.list-unstyled
+                        li.mb-2
+                            a.text-light(href="/") Trang chủ
+                        li.mb-2
+                            a.text-light(href="/products") Sản phẩm
+                        li.mb-2
+                            a.text-light(href="/posts") Bài viết
+                        li.mb-2
+                            a.text-light(href="/cart") Giỏ hàng
+                        li.mb-2
+                            a.text-light(href="/user/info") Tài khoản
+        
+        hr.border-light.my-4
+        
+        .row
+            .col-12.text-center
+                if settingGeneral && settingGeneral.copyright
+                    p.text-light.mb-0 © 2025 #{settingGeneral.copyright}. All rights reserved.
+                else
+                    p.text-light.mb-0 © 2025 Cửa hàng điện thoại. All rights reserved.
+                .social-links.mt-3
+                    a.text-light.me-5(href="#", title="Facebook")
+                        i.fa-brands.fa-facebook-f.fa-lg(style="margin-right: 10px;")
+                    a.text-light.me-5(href="#", title="Instagram")
+                        i.fa-brands.fa-instagram.fa-lg(style="margin-right: 10px;")
+                    a.text-light.me-5(href="#", title="Twitter")
+                        i.fa-brands.fa-twitter.fa-lg(style="margin-right: 10px;")
+                    a.text-light(href="#", title="YouTube")
+                        i.fa-brands.fa-youtube.fa-lg(style="margin-right: 10px;")
