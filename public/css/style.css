@@ -189,7 +189,7 @@ header {
     display: block; /* Đảm bảo hình ảnh không bị lỗi inline */
 }
 
-.product-item .inner-image .inner-featured {
+/* .product-item .inner-image .inner-featured {
     position: absolute;
     top: 0;
     right: 0;
@@ -199,7 +199,7 @@ header {
     font-weight: 600;
     font-size: 14px;
     border-radius: 8px;
-}
+} */
 
 .product-item .inner-content {
     padding: 15px;
@@ -231,7 +231,7 @@ header {
     margin-bottom: 5px;
 }
 
-.product-item .inner-content .inner-discount {
+/* .product-item .inner-content .inner-discount {
     font-size: 14px;
     font-weight: 600;
     color: white;
@@ -239,8 +239,8 @@ header {
     display: inline-block;
     padding: 3px 10px;
     border-radius: 8px;
-    align-self: flex-start; /* Đảm bảo giảm giá căn trái */
-}
+    align-self: flex-start; 
+} */
 
 /* Điều chỉnh độ cao của các khối để chúng đồng đều */
 .col-3 {

@@ -1,13 +1,78 @@
 mixin product-item(item) 
-    .col-3.mb-3 
-        .product-item
-            .inner-image
-                img(src=item.thumbnail, alt=item.title)
+    .col-3.mb-4 
+        .product-item.card.h-100.shadow-sm.border-0.position-relative(onclick=`window.location.href='/products/detail/${item.slug}'`, style="cursor: pointer; transition: all 0.3s ease;")
+            .inner-image.position-relative.overflow-hidden
+                img.card-img-top(src=item.thumbnail, alt=item.title, style="height: 200px; object-fit: cover; transition: transform 0.3s ease;")
                 if(item.featured == "1")
-                    .inner-featured 🔥Đắt hàng 
-            .inner-content
-                h3.inner-title
-                    a(href=`/products/detail/${item.slug}`) #{item.title}
-                .inner-price-new #{item.priceNew}$
-                .inner-price-old #{item.price}$
-                .inner-discount #{item.discountPercentage}%
+                    .inner-featured.position-absolute.badge.badge-danger(style="top: 8px; left: 8px; font-size: 0.75rem; z-index: 3; padding: 4px 8px; border-radius: 12px;") 
+                        i.fa.fa-fire.mr-1
+                        | Bán chạy
+                if(item.discountPercentage)
+                    .inner-discount-badge.position-absolute.badge.text-white(style="top: 8px; right: 8px; background: linear-gradient(45deg, #FF6B6B, #FF8E8E); font-size: 0.75rem; z-index: 2; padding: 4px 8px; border-radius: 12px;")
+                        | -#{item.discountPercentage}%
+            
+            .card-body.d-flex.flex-column.p-3
+                h3.inner-title.card-title.mb-2(style="font-size: 1rem; font-weight: 600; color: #333; line-height: 1.4; min-height: 2.8rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;")
+                    | #{item.title}
+                
+                .price-section.mt-auto
+                    if(item.priceNew)
+                        .inner-price-new.mb-1(style="font-size: 1.2rem; font-weight: 700; color: #DB0E0E;") 
+                            | #{item.priceNew.toLocaleString()}$
+                    if(item.price && item.price !== item.priceNew)
+                        .inner-price-old.mb-2(style="font-size: 0.9rem; color: #999; text-decoration: line-through;") 
+                            | #{item.price.toLocaleString()}$
+                    
+                .btn.btn-outline-primary.btn-sm.mt-2.w-100(style="border-radius: 20px; font-weight: 500; transition: all 0.3s ease;")
+                    i.fa.fa-eye.mr-2
+                    | Xem chi tiết
+
+    style.
+        .product-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+        }
+        
+        .product-item:hover .card-img-top {
+            transform: scale(1.05);
+        }
+        
+        .product-item:hover .btn-outline-primary {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        
+        .product-item .inner-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, transparent 0%, transparent 70%, rgba(0,0,0,0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .product-item:hover .inner-image::after {
+            opacity: 1;
+        }
+        
+        .card-body {
+            background: linear-gradient(to bottom, #ffffff 0%, #fafafa 100%);
+        }
+        
+        @media (max-width: 768px) {
+            .col-3 {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .col-3 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+        }
