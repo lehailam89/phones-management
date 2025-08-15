@@ -9,15 +9,59 @@ block main
             .row
                 each post in posts
                     .col-md-4.mb-4
-                        .card.h-100
-                            img.card-img-top(src=post.thumbnail, alt=post.title, style="height: 200px; object-fit: cover;")
-                            .card-body
-                                h2.card-title.h5= post.title
-                                p.card-text.text-muted.small Ngày đăng: #{new Date(post.createdAt).toLocaleDateString('vi-VN')}
-                                p.card-text.text-muted.small Tác giả: #{post.createdBy.accountFullName} 
-                                a.btn.btn-primary.mt-2(href=`/posts/detail/${post.slug}`) Đọc thêm
+                        .card.h-100.shadow-sm.border-0(onclick=`window.location.href='/posts/detail/${post.slug}'`, style="cursor: pointer; transition: all 0.3s ease;")
+                            .position-relative.overflow-hidden
+                                img.card-img-top(src=post.thumbnail, alt=post.title, style="height: 200px; object-fit: cover; transition: transform 0.3s ease;")
+                            .card-body.d-flex.flex-column
+                                h2.card-title.h5.mb-3(style="color: #333; font-weight: 600; line-height: 1.4; min-height: 3.2rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;")= post.title
+                                .mt-auto
+                                    p.card-text.text-muted.small.mb-1
+                                        i.fa.fa-calendar.mr-2
+                                        | Ngày đăng: #{new Date(post.createdAt).toLocaleDateString('vi-VN')}
+                                    p.card-text.text-muted.small.mb-3
+                                        i.fa.fa-user.mr-2
+                                        | Tác giả: #{post.createdBy.accountFullName}
+                                    .btn.btn-outline-primary.btn-sm.w-100.mt-2(style="border-radius: 20px; font-weight: 500; transition: all 0.3s ease;")
+                                        i.fa.fa-book-open.mr-2
+                                        | Đọc thêm
             
             .mt-4
                 +pagination(pagination)
         else
             .alert.alert-info.text-center Không có bài viết nào.
+
+    style.
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+        }
+        
+        .card:hover .card-img-top {
+            transform: scale(1.05);
+        }
+        
+        .card:hover .btn-outline-primary {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        
+        .card .position-relative::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, transparent 0%, transparent 70%, rgba(0,0,0,0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .card:hover .position-relative::after {
+            opacity: 1;
+        }
+        
+        .card-body {
+            background: linear-gradient(to bottom, #ffffff 0%, #fafafa 100%);
+        }

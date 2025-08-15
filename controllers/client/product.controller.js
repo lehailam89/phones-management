@@ -102,34 +102,51 @@ module.exports.category = async (req, res) => {
 module.exports.detail = async (req, res) => {
     try {
         const slug = req.params.slugProduct;
+        // console.log("=== DEBUG: Searching for product with slug:", slug);
 
-        const product = await Product.findOne({
+        let product = await Product.findOne({
             slug: slug,
             deleted: false,
             status: "active"
-        }).populate('comments.user', 'fullName'); // Sử dụng populate để lấy thông tin người dùng
+        }).populate('comments.user', 'fullName');
+
+        // Nếu không tìm thấy bằng slug, thử tìm bằng ID (fallback)
+        if (!product && slug) {
+            // console.log("Product not found by slug, trying to find by ID...");
+            product = await Product.findOne({
+                _id: slug,
+                deleted: false,
+                status: "active"
+            }).populate('comments.user', 'fullName');
+        }
+
+        if (!product) {
+            // console.log("Product not found - redirecting to home");
+            return res.redirect('/');
+        }
+
+        // console.log("Product found:", product.title, "Slug:", product.slug);
 
         if (product.product_category_id) {
             const category = await ProductCategory.findOne({
                 _id: product.product_category_id,
                 deleted: false,
                 status: "active"
-            })
-            product.category = category
+            });
+            if (category) {
+                product.category = category;
+            }
         }
 
-        product.priceNew = productsHelper.priceNewProduct(product)
+        product.priceNew = productsHelper.priceNewProduct(product);
 
-        if (!product)
-            return res.redirect('back')
-        // console.log(product)
         res.render("client/pages/products/detail", {
             pageTitle: 'Chi tiết sản phẩm',
             product
         });
     } catch (error) {
-        console.log(error)
-        res.redirect("/")
+        console.log("Error in product detail:", error);
+        res.redirect("/");
     }
 
 }
