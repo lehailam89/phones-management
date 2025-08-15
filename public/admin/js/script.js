@@ -1,3 +1,21 @@
+//Sider focus//
+// document.addEventListener("DOMContentLoaded", () => {
+//   const siderLinks = document.querySelectorAll(".sider .inner-menu ul li a");
+
+//   siderLinks.forEach(link => {
+//     // Kiểm tra URL hiện tại và thêm lớp active vào thẻ a tương ứng
+//     if (window.location.href.includes(link.getAttribute('href'))) {
+//       link.classList.add("active");
+//     }
+
+//     link.addEventListener("click", () => {
+//       siderLinks.forEach(link => link.classList.remove("active"));
+//       link.classList.add("active");
+//     });
+//   });
+// });
+//End Sider focus//
+
 // Button Status
 const buttonStatus = document.querySelectorAll('[button-status]');
 //thuộc tính tự định nghĩa là phải thêm dấu ngoặc vuông

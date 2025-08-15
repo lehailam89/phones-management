@@ -112,6 +112,27 @@ block main
                     class="image-preview"
                     upload-image-preview
                 )
+            div(
+                class="form-group"
+                upload-image-multiple
+            )
+                label(for="images") Ảnh mô tả
+                input(
+                    type="file"
+                    class="form-control-file"
+                    id="images"
+                    name="images"
+                    accept="image/*"
+                    multiple
+                    upload-image-input
+                )
+                div(
+                    class="images-preview"
+                    upload-image-preview
+                )
+                    if product && product.images
+                        each image in product.images
+                            img(src=image, class="image-preview", style="width: 150px; height: 150px; object-fit: cover; margin: 10px; border: 1px solid #ddd; border-radius: 5px;")
             div(class="form-group")
                 label(for="position") Vị trí
                 input(

@@ -51,3 +51,39 @@ if(buttonsDelete.length > 0){
 }
 
 //End Delete Item
+
+// Xử lý upload multiple images
+const uploadImageMultiple = document.querySelector("[upload-image-multiple]");
+if (uploadImageMultiple) {
+    const uploadImageInput = uploadImageMultiple.querySelector("[upload-image-input]");
+    const uploadImagePreview = uploadImageMultiple.querySelector("[upload-image-preview]");
+    
+    uploadImageInput.addEventListener("change", (e) => {
+        const files = e.target.files;
+        if (files.length > 0) {
+            // Xóa preview cũ
+            uploadImagePreview.innerHTML = "";
+            
+            // Tạo preview cho từng file
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const img = document.createElement("img");
+                img.classList.add("image-preview");
+                img.style.width = "150px";
+                img.style.height = "150px";
+                img.style.objectFit = "cover";
+                img.style.margin = "10px";
+                img.style.border = "1px solid #ddd";
+                img.style.borderRadius = "5px";
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+                
+                uploadImagePreview.appendChild(img);
+            }
+        }
+    });
+}

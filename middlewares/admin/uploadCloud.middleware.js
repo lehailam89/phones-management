@@ -22,8 +22,15 @@ const streamUpload = (file) => {
 };
 
 module.exports.upload = async (req, res, next) => {
-    if (req.files) {
-        try {
+    try {
+        // Xử lý single file (req.file) - cho setting general
+        if (req.file) {
+            let result = await streamUpload(req.file);
+            req.body[req.file.fieldname] = result.url;
+        }
+
+        // Xử lý multiple files (req.files) - cho product images
+        if (req.files) {
             for (const fieldName in req.files) {
                 req.body[fieldName] = [];
                 for (const file of req.files[fieldName]) {
@@ -31,12 +38,11 @@ module.exports.upload = async (req, res, next) => {
                     req.body[fieldName].push(result.url);
                 }
             }
-            next();
-        } catch (error) {
-            console.error(error);
-            res.status(500).send("Error uploading files");
         }
-    } else {
+
         next();
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error uploading files");
     }
 };

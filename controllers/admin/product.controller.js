@@ -211,8 +211,17 @@ module.exports.createPost = async (req, res) => {
     req.body.stock = parseInt(req.body.stock);
 
     if (req.body.position === "") {
-        const countProducts = await Product.countDocuments();
-        req.body.position = countProducts + 1;
+        // const countProducts = await Product.countDocuments();
+        // req.body.position = countProducts + 1;
+        
+        // Tìm sản phẩm có position cao nhất (không bị xóa)
+        const productWithMaxPosition = await Product.findOne({ deleted: false })
+            .sort({ position: -1 });
+
+        // Gán position mới: cao hơn position lớn nhất hiện tại 1 đơn vị, 
+        // nếu chưa có sản phẩm nào thì gán = 1
+        req.body.position = productWithMaxPosition ? productWithMaxPosition.position + 1 : 1;
+
     } else {
         req.body.position = parseInt(req.body.position);
     }
