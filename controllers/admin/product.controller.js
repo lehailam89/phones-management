@@ -307,11 +307,59 @@ module.exports.detail = async (req, res) => {
         const id = req.params.id;
         const product = await Product.findOne({_id: id, deleted: false});
 
+        // Lấy danh sách categories để hiển thị tên danh mục
+        let find = {
+            deleted: false
+        }
+        const records = await ProductCategory.find(find);
+        const newRecords = createTree(records);
+
+        // Debug: In ra cấu trúc dữ liệu
+        // /console.log('Product category ID:', product.product_category_id);
+        // console.log('Records structure:', JSON.stringify(newRecords, null, 2));
+
+        // Tìm tên danh mục từ records (bao gồm cả danh mục con)
+        let categoryName = "Chưa phân loại";
+        if (product.product_category_id) {
+            // Tìm trong records gốc (không có cây phân cấp)
+            const directFind = records.find(record => 
+                record._id.toString() === product.product_category_id.toString()
+            );
+            
+            if (directFind) {
+                categoryName = directFind.title;
+            } else {
+                // Nếu không tìm thấy trong records gốc, tìm trong cây phân cấp
+                const findCategoryInTree = (treeRecords, categoryId) => {
+                    for (let record of treeRecords) {
+                        if (record._id.toString() === categoryId.toString()) {
+                            return record.title;
+                        }
+                        if (record.children && record.children.length > 0) {
+                            const found = findCategoryInTree(record.children, categoryId);
+                            if (found) return found;
+                        }
+                    }
+                    return null;
+                };
+                
+                const foundName = findCategoryInTree(newRecords, product.product_category_id);
+                if (foundName) {
+                    categoryName = foundName;
+                }
+            }
+        }
+
+        // console.log('Final category name:', categoryName);
+
         res.render("admin/pages/products/detail", {
             pageTitle: "Chi tiết sản phẩm",
-            product: product
+            product: product,
+            records: newRecords,
+            categoryName: categoryName
         })
     } catch (error) {
+        console.error('Detail error:', error);
         req.flash("error", "Không tồn tại sản phẩm có id này!");
         res.redirect(`${systemConfig.prefixAdmin}/products`);
     }
