@@ -61,12 +61,17 @@ block main
     .container.my-5
       .row
         .col-12
-          +box-head("Mô tả sản phẩm")
-          .inner-desc !{product.description}
+          .card.shadow-sm
+            .card-header.text-white(style="background-color: #DB0E0E;")
+              h4.mb-0
+                i.fa.fa-info-circle.mr-2
+                | Mô tả sản phẩm
+            .card-body.p-4
+              .product-description !{product.description}
 
     .container.my-5
       .row
-        .col-12
+        .col-12 
           +box-head("Bình luận")
           
           // Form bình luận
@@ -193,3 +198,38 @@ block main
 
         updateArrowsVisibility();
       });
+
+    style.
+      .product-description img {
+        max-width: 100% !important;
+        height: auto !important;
+        object-fit: contain;
+        border-radius: 8px;
+        margin: 15px auto;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        display: block;
+      }
+      
+      .product-description {
+        overflow-x: auto;
+        word-wrap: break-word;
+        line-height: 1.6;
+
+      }
+      
+      .product-description p {
+        margin-bottom: 15px;
+        text-align: left;
+      }
+      
+      .product-description * {
+        max-width: 100% !important;
+      }
+      
+      .product-description h1, 
+      .product-description h2, 
+      .product-description h3 {
+        color: #333;
+        margin-top: 20px;
+        margin-bottom: 10px;
+      }
