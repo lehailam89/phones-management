@@ -67,6 +67,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const message = chatInput.value;
         if (!message) return;
 
+        chatInput.value = ''; // Xóa input ngay khi gửi
+
         const messageElement = document.createElement('div');
         messageElement.textContent = `You: ${message}`;
         messageElement.classList.add('message', 'user');
@@ -92,8 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
             messages.appendChild(errorElement);
             scrollToBottom();
         }
-
-        chatInput.value = '';
     };
 
     sendChat.addEventListener('click', sendMessage);
