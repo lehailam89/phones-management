@@ -4,15 +4,274 @@ include ../../mixins/product-layout.pug
 include ../../mixins/pagination.pug
 
 block main 
-
     .container.my-3     
         .row 
             .col-12
                 +box-head(pageTitle)
 
-        +product-grid(products)
-
-        .row
+        // Professional Filter Bar
+        .row.mb-4
             .col-12
-                +pagination(pagination)
-                                            
+                .filter-bar.card.shadow-sm
+                    .card-body.py-3
+                        form#product-filter(method="GET")
+                            .row.g-3.align-items-center
+                                // Search by name
+                                .col-lg-4.col-md-6
+                                    .input-group
+                                        span.input-group-text
+                                            i.fas.fa-search
+                                        input.form-control(
+                                            type="text"
+                                            name="keyword"
+                                            placeholder="Tìm kiếm sản phẩm..."
+                                            value=currentFilters.keyword || ""
+                                        )
+                                
+                                // Category filter
+                                .col-lg-3.col-md-6
+                                    select.form-select(name="category")
+                                        option(value="all" selected=!currentFilters.category || currentFilters.category === 'all') Tất cả danh mục
+                                        each category in categories
+                                            option(
+                                                value=category._id 
+                                                selected=currentFilters.category === category._id.toString()
+                                            ) #{category.title}
+                                
+                                // Sort options
+                                .col-lg-3.col-md-6
+                                    select.form-select(name="sort")
+                                        option(value="position" selected=!currentFilters.sort || currentFilters.sort === 'position') Mặc định
+                                        option(value="name_asc" selected=currentFilters.sort === 'name_asc') Tên A → Z
+                                        option(value="name_desc" selected=currentFilters.sort === 'name_desc') Tên Z → A
+                                        option(value="price_asc" selected=currentFilters.sort === 'price_asc') Giá thấp → cao
+                                        option(value="price_desc" selected=currentFilters.sort === 'price_desc') Giá cao → thấp
+                                        option(value="newest" selected=currentFilters.sort === 'newest') Mới nhất
+                                
+                                // Filter buttons
+                                .col-lg-2.col-md-6
+                                    .d-flex.gap-2
+                                        button.btn.btn-primary.flex-fill(type="submit")
+                                            i.fas.fa-filter.me-1
+                                            | Lọc
+                                        button.btn.btn-outline-secondary(type="button" onclick="clearFilters()")
+                                            i.fas.fa-times
+
+        // Filter results info
+        if currentFilters.keyword || currentFilters.category !== 'all' || currentFilters.sort !== 'position'
+            .row.mb-3
+                .col-12
+                    .filter-results.d-flex.flex-wrap.align-items-center.gap-2
+                        span.text-muted Đang lọc:
+                        if currentFilters.keyword
+                            span.badge.bg-primary
+                                i.fas.fa-search.me-1
+                                | "#{currentFilters.keyword}"
+                                button.btn-close.btn-close-white.ms-2(onclick=`removeFilter('keyword')`)
+                        if currentFilters.category && currentFilters.category !== 'all'
+                            - const selectedCategory = categories.find(cat => cat._id.toString() === currentFilters.category)
+                            if selectedCategory
+                                span.badge.bg-info
+                                    i.fas.fa-tag.me-1
+                                    | #{selectedCategory.title}
+                                    button.btn-close.btn-close-white.ms-2(onclick=`removeFilter('category')`)
+                        if currentFilters.sort && currentFilters.sort !== 'position'
+                            - let sortLabel = 'Sắp xếp'
+                            - if (currentFilters.sort === 'name_asc') sortLabel = 'Tên A-Z'
+                            - if (currentFilters.sort === 'name_desc') sortLabel = 'Tên Z-A'
+                            - if (currentFilters.sort === 'price_asc') sortLabel = 'Giá tăng dần'
+                            - if (currentFilters.sort === 'price_desc') sortLabel = 'Giá giảm dần'
+                            - if (currentFilters.sort === 'newest') sortLabel = 'Mới nhất'
+                            span.badge.bg-success
+                                i.fas.fa-sort.me-1
+                                | #{sortLabel}
+                                button.btn-close.btn-close-white.ms-2(onclick=`removeFilter('sort')`)
+                        
+                        button.btn.btn-sm.btn-outline-danger.ms-auto(onclick="clearFilters()")
+                            i.fas.fa-trash.me-1
+                            | Xóa tất cả
+
+        // Results count
+        .row.mb-3
+            .col-12
+                .results-info
+                    span.text-muted
+                        | Hiển thị 
+                        strong.text-primary #{products.length}
+                        |  / 
+                        strong.text-success #{totalProducts}
+                        |  sản phẩm
+
+        // Products Grid
+        if products && products.length > 0
+            +product-grid(products)
+        else
+            .row
+                .col-12
+                    .no-results.text-center.py-5
+                        .mb-3
+                            i.fas.fa-search.fa-3x.text-muted(style="opacity: 0.5;")
+                        h4.text-muted Không tìm thấy sản phẩm
+                        p.text-muted.mb-4 Vui lòng thử lại với điều kiện lọc khác
+                        button.btn.btn-primary(onclick="clearFilters()")
+                            i.fas.fa-home.me-2
+                            | Xem tất cả sản phẩm
+
+        // Pagination
+        if products && products.length > 0
+            .row.mt-4
+                .col-12
+                    +pagination(pagination)
+
+    // Professional Styling
+    style.
+        .filter-bar {
+            border: 1px solid #e3e6f0;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #f8f9fc 0%, #ffffff 100%);
+        }
+        
+        .filter-bar .card-body {
+            background: transparent;
+        }
+        
+        .form-control, .form-select {
+            border: 1px solid #d1d3e2;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #5a5c69;
+            box-shadow: 0 0 0 0.2rem rgba(90, 92, 105, 0.25);
+        }
+        
+        .input-group-text {
+            background: #f8f9fc;
+            border-color: #d1d3e2;
+            color: #5a5c69;
+        }
+        
+        .btn {
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .filter-results .badge {
+            font-size: 0.8rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .btn-close {
+            font-size: 0.6rem;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .results-info {
+            background: #f8f9fc;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            border: 1px solid #e3e6f0;
+        }
+        
+        .no-results {
+            background: #ffffff;
+            border: 2px dashed #e3e6f0;
+            border-radius: 10px;
+            margin: 2rem 0;
+        }
+        
+        @media (max-width: 768px) {
+            .filter-bar .row > div {
+                margin-bottom: 0.5rem;
+            }
+            
+            .d-flex.gap-2 {
+                flex-direction: column;
+            }
+            
+            .filter-results {
+                justify-content: center;
+            }
+            
+            .filter-results .badge {
+                font-size: 0.7rem;
+                padding: 0.4rem 0.6rem;
+            }
+        }
+
+    // Enhanced JavaScript
+    script.
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-submit form when selects change
+            document.querySelectorAll('select[name="category"], select[name="sort"]').forEach(select => {
+                select.addEventListener('change', function() {
+                    document.getElementById('product-filter').submit();
+                });
+            });
+            
+            // Submit form when search input changes (with debounce)
+            let searchTimeout;
+            const searchInput = document.querySelector('input[name="keyword"]');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        if (this.value.length >= 2 || this.value.length === 0) {
+                            document.getElementById('product-filter').submit();
+                        }
+                    }, 800);
+                });
+                
+                // Submit immediately on Enter
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        clearTimeout(searchTimeout);
+                        document.getElementById('product-filter').submit();
+                    }
+                });
+            }
+            
+            // Clear all filters
+            window.clearFilters = function() {
+                const url = new URL(window.location);
+                url.search = '';
+                window.location.href = url.toString();
+            };
+            
+            // Remove individual filter
+            window.removeFilter = function(filterKey) {
+                const url = new URL(window.location);
+                url.searchParams.delete(filterKey);
+                url.searchParams.delete('page'); // Reset pagination
+                window.location.href = url.toString();
+            };
+            
+            // Form submission with loading state
+            document.getElementById('product-filter').addEventListener('submit', function() {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Đang lọc...';
+                    submitBtn.disabled = true;
+                    
+                    // Re-enable after a delay if form doesn't submit
+                    setTimeout(() => {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    }, 3000);
+                }
+            });
+        });
