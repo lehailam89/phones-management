@@ -1,7 +1,7 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const RAGHelper = require("../../helpers/ragHelper");
 
-const genAI = new GoogleGenerativeAI("AIzaSyB3vuKdE8o5acHk5RXXNLCs4FvwGGcBZJ0");
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 module.exports.getChatPage = (req, res) => {
@@ -39,7 +39,7 @@ ${context.storeInfo ? `
             contextPrompt += `SẢN PHẨM LIÊN QUAN:\n`;
             context.products.forEach((product, index) => {
                 contextPrompt += `${index + 1}. ${product.name}
-   - Giá gốc: ${product.price.toLocaleString('vi-VN')}đ
+   - Giá gốc: ${product.price.toLocaleString('vi-VN')}$
    - Giá khuyến mãi: ${product.discountPrice.toLocaleString('vi-VN')}$
    - Tồn kho: ${product.stock} sản phẩm
    - Mô tả: ${product.description}
