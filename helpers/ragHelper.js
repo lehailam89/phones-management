@@ -414,35 +414,57 @@ class RAGHelper {
     }
 
     // Tổng hợp context chi tiết cho AI
-    static async buildContext(message) {
+    static async buildContext(message, conversationHistory = []) {
         const intent = this.analyzeIntent(message);
         const { keywords, brands, priceInfo } = this.extractKeywords(message);
+        
+        // Phân tích ngữ cảnh từ lịch sử cuộc trò chuyện
+        const contextFromHistory = this.analyzeConversationContext(conversationHistory);
+        
         let context = {};
 
         try {
             switch (intent) {
                 case 'search_product':
-                    const searchKeyword = brands.length > 0 ? brands[0] : keywords;
+                    // Ưu tiên thương hiệu từ lịch sử nếu tin nhắn hiện tại không rõ ràng
+                    let searchKeyword = brands.length > 0 ? brands[0] : keywords;
+                    if (!searchKeyword && contextFromHistory.recentBrands.length > 0) {
+                        searchKeyword = contextFromHistory.recentBrands[0];
+                    }
                     context.products = await this.searchProducts(searchKeyword, 5, priceInfo);
                     if (brands.length > 0) {
                         context.searchBrand = brands[0];
                     }
+                    // Thêm thông tin từ ngữ cảnh
+                    context.conversationContext = contextFromHistory;
                     break;
 
                 case 'price_inquiry':
-                    if (priceInfo.minPrice || priceInfo.maxPrice) {
-                        context.products = await this.searchProducts('', 8, priceInfo);
-                        context.priceRange = priceInfo;
+                    // Kết hợp thông tin giá từ tin nhắn hiện tại và lịch sử
+                    const combinedPriceInfo = {
+                        ...contextFromHistory.priceRanges,
+                        ...priceInfo
+                    };
+                    if (combinedPriceInfo.minPrice || combinedPriceInfo.maxPrice) {
+                        context.products = await this.searchProducts('', 8, combinedPriceInfo);
+                        context.priceRange = combinedPriceInfo;
                     } else {
-                        context.products = await this.searchProducts(keywords, 5);
+                        const searchTerm = keywords || contextFromHistory.recentProducts[0] || '';
+                        context.products = await this.searchProducts(searchTerm, 5);
                     }
                     break;
 
                 case 'product_comparison':
-                    // Trích xuất tên sản phẩm để so sánh
-                    const productNames = message.match(/[a-zA-Z0-9\s]+/g)?.filter(name => 
+                    // Trích xuất tên sản phẩm từ tin nhắn hiện tại và lịch sử
+                    let productNames = message.match(/[a-zA-Z0-9\s]+/g)?.filter(name => 
                         name.length > 3 && !['so sánh', 'với', 'và', 'hay', 'tốt hơn'].includes(name.toLowerCase())
                     ) || [];
+                    
+                    // Nếu không đủ sản phẩm, lấy từ lịch sử
+                    if (productNames.length < 2 && contextFromHistory.recentProducts.length > 0) {
+                        productNames = [...productNames, ...contextFromHistory.recentProducts];
+                    }
+                    
                     if (productNames.length >= 2) {
                         context.comparisonProducts = await this.compareProducts(productNames.slice(0, 3));
                     } else {
@@ -498,22 +520,107 @@ class RAGHelper {
                     context.storeInfo = await this.getStoreInfo();
                     context.featuredProducts = await this.getSpecialProducts('featured', 3);
                     context.categories = await this.getCategories();
+                    // Thêm ngữ cảnh từ lịch sử
+                    context.conversationContext = contextFromHistory;
                     break;
             }
 
             // Thêm thông tin bổ sung
             context.intent = intent;
             context.extractedInfo = { keywords, brands, priceInfo };
+            context.historyContext = contextFromHistory;
 
         } catch (error) {
             console.error('Error building context:', error);
             context = {
                 error: 'Có lỗi xảy ra khi tải thông tin',
-                storeInfo: await this.getStoreInfo()
+                storeInfo: await this.getStoreInfo(),
+                conversationContext: contextFromHistory
             };
         }
 
         return { intent, context };
+    }
+
+    // Phân tích ngữ cảnh từ lịch sử cuộc trò chuyện
+    static analyzeConversationContext(conversationHistory) {
+        if (!conversationHistory || conversationHistory.length === 0) {
+            return {
+                recentProducts: [],
+                recentBrands: [],
+                priceRanges: {},
+                topics: [],
+                userPreferences: {}
+            };
+        }
+
+        const recentProducts = [];
+        const recentBrands = [];
+        const topics = [];
+        let priceRanges = {};
+        const userPreferences = {};
+
+        // Phân tích 10 tin nhắn gần nhất
+        const recentMessages = conversationHistory.slice(-10);
+        
+        recentMessages.forEach(msg => {
+            if (msg.role === 'user') {
+                const content = msg.content.toLowerCase();
+                
+                // Trích xuất tên sản phẩm đã đề cập
+                const productMatches = content.match(/(iphone|samsung|xiaomi|oppo|vivo|realme|nokia|huawei)[\s\w]*/g);
+                if (productMatches) {
+                    productMatches.forEach(product => {
+                        if (!recentProducts.includes(product) && recentProducts.length < 5) {
+                            recentProducts.push(product);
+                        }
+                    });
+                }
+
+                // Trích xuất thương hiệu
+                const brands = ['iphone', 'samsung', 'xiaomi', 'oppo', 'vivo', 'realme', 'nokia', 'huawei'];
+                brands.forEach(brand => {
+                    if (content.includes(brand) && !recentBrands.includes(brand)) {
+                        recentBrands.push(brand);
+                    }
+                });
+
+                // Trích xuất khoảng giá
+                const priceMatches = content.match(/(\d+)\s*triệu/g);
+                if (priceMatches) {
+                    priceMatches.forEach(match => {
+                        const price = parseInt(match.replace(/\D/g, '')) * 1000000;
+                        if (content.includes('dưới')) {
+                            priceRanges.maxPrice = price;
+                        } else if (content.includes('trên')) {
+                            priceRanges.minPrice = price;
+                        }
+                    });
+                }
+
+                // Phân tích chủ đề quan tâm
+                if (content.includes('gaming') || content.includes('chơi game')) {
+                    topics.push('gaming');
+                }
+                if (content.includes('camera') || content.includes('chụp ảnh')) {
+                    topics.push('photography');
+                }
+                if (content.includes('pin') || content.includes('battery')) {
+                    topics.push('battery');
+                }
+                if (content.includes('học sinh') || content.includes('sinh viên')) {
+                    userPreferences.userType = 'student';
+                }
+            }
+        });
+
+        return {
+            recentProducts: [...new Set(recentProducts)],
+            recentBrands: [...new Set(recentBrands)],
+            priceRanges,
+            topics: [...new Set(topics)],
+            userPreferences
+        };
     }
 }
 
