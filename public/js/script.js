@@ -50,9 +50,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeChatbox = document.getElementById('close-chatbox');
     const openChatbox = document.getElementById('open-chatbox');
 
+    // Lưu trữ session ID để duy trì ngữ cảnh cuộc trò chuyện
+    let currentSessionId = localStorage.getItem('chatSessionId') || null;
+
     if (openChatbox) {
         openChatbox.addEventListener('click', () => {
             chatbox.style.display = 'flex';
+            // Hiển thị thông báo chào mừng nếu là session mới
+            if (!currentSessionId && messages && messages.children.length === 0) {
+                const welcomeMessage = createMessageElement(
+                    'Xin chào! Tôi là trợ lý ảo của Lâm Mobile. Tôi có thể giúp bạn tìm hiểu về các sản phẩm điện thoại, giá cả, và tư vấn lựa chọn phù hợp. Bạn cần hỗ trợ gì hôm nay?', 
+                    false
+                );
+                messages.appendChild(welcomeMessage);
+                scrollToBottom();
+            }
         });
     }
 
@@ -162,9 +174,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch('/chat/message', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message }),
+                body: JSON.stringify({ 
+                    message,
+                    sessionId: currentSessionId 
+                }),
             });
             const data = await response.json();
+            
+            // Lưu sessionId để duy trì ngữ cảnh
+            if (data.sessionId) {
+                currentSessionId = data.sessionId;
+                localStorage.setItem('chatSessionId', currentSessionId);
+            }
             
             // Remove typing indicator
             if (messages && typingIndicator.parentNode) {
@@ -173,6 +194,15 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Add AI response với thông tin metadata
             const aiMessage = createMessageElement(data.response, false);
+            
+            // Thêm indicator số tin nhắn trong cuộc trò chuyện
+            if (data.messageCount) {
+                const contextIndicator = document.createElement('div');
+                contextIndicator.className = 'context-indicator';
+                contextIndicator.style.cssText = 'font-size: 10px; color: #666; margin-top: 5px;';
+                contextIndicator.textContent = `💬 Tin nhắn ${data.messageCount} trong cuộc trò chuyện`;
+                aiMessage.querySelector('.message-content').appendChild(contextIndicator);
+            }
             
             // Thêm indicator nếu không phải AI response
             if (data.metadata && !data.metadata.isAIResponse) {
@@ -229,6 +259,28 @@ document.addEventListener('DOMContentLoaded', () => {
         closeChatbox.addEventListener('click', () => {
             if (chatbox) {
                 chatbox.style.display = 'none';
+            }
+        });
+    }
+
+    // Thêm nút xóa lịch sử cuộc trò chuyện
+    const clearHistoryButton = document.getElementById('clear-chat-history');
+    if (clearHistoryButton) {
+        clearHistoryButton.addEventListener('click', () => {
+            // Xóa session ID
+            currentSessionId = null;
+            localStorage.removeItem('chatSessionId');
+            
+            // Xóa tin nhắn hiện tại
+            if (messages) {
+                messages.innerHTML = '';
+            }
+            
+            // Hiển thị thông báo
+            const clearMessage = createMessageElement('Đã xóa lịch sử cuộc trò chuyện. Cuộc trò chuyện mới bắt đầu!', false);
+            if (messages) {
+                messages.appendChild(clearMessage);
+                scrollToBottom();
             }
         });
     }
