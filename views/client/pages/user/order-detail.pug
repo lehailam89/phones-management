@@ -68,15 +68,15 @@ block main
                                                         strong= product.productInfo.title
                                                     else
                                                         em Sản phẩm không tồn tại
-                                                td.text-end #{product.priceNew ? product.priceNew.toLocaleString('vi-VN') : 0} $
+                                                td.text-end #{product.priceNew ? product.priceNew.toLocaleString('vi-VN') : 0}$
                                                 td.text-center #{product.quantity}
-                                                td.text-end.text-danger.fw-bold #{(product.totalPrice || 0).toLocaleString('vi-VN')} $
+                                                td.text-end.text-danger.fw-bold #{(product.totalPrice || 0).toLocaleString('vi-VN')}$
 
                         hr
 
                         .total-section.text-end
                             h4.text-danger
-                                strong Tổng cộng: #{order.totalPrice.toLocaleString('vi-VN')} $
+                                strong Tổng cộng: #{order.totalPrice.toLocaleString('vi-VN')}$
 
         .row.mt-3
             .col-12.text-center

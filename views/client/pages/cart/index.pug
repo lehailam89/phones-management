@@ -45,7 +45,7 @@ block main
                             ) #{item.productInfo.title}
                             small.text-muted Mã SP: #{item.product_id.slice(-6).toUpperCase()}
                         td.text-end
-                          span.fw-bold.text-primary #{item.productInfo.priceNew.toLocaleString('vi-VN')} $
+                          span.fw-bold.text-primary #{item.productInfo.priceNew.toLocaleString('vi-VN')}$
                         td.text-center
                           .quantity-controls.d-flex.align-items-center.justify-content-center
                             input.form-control.text-center(
@@ -58,7 +58,7 @@ block main
                               style="width: 70px;"
                             )
                         td.text-end
-                          span.fw-bold.text-danger.fs-5 #{item.totalPrice.toLocaleString('vi-VN')} $
+                          span.fw-bold.text-danger.fs-5 #{item.totalPrice.toLocaleString('vi-VN')}$
                         td.text-center
                           a.btn.btn-outline-danger.btn-sm(
                             href=`/cart/delete/${item.product_id}`,
