@@ -112,9 +112,10 @@ block main
                                     - const text = item.status === "active" ? "Hoạt động" : "Dừng hoạt động"
                                     a(
                                         href="javascript:;"
-                                        class=`badge bg-${badgeClass} status-change text-white`
-                                        data-status=item.status === "active" ? "inactive" : "active"
+                                        class=`badge bg-${badgeClass} text-white`
+                                        data-status=item.status
                                         data-id=item.id
+                                        button-change-status
                                     ) #{text}
                                 td
                                     if(item.createdBy && item.createdBy.accountFullName)
@@ -154,4 +155,4 @@ block main
         data-path=`${prefixAdmin}/posts/change-status`
     )
 
-    script(src="/admin/js/product.js")
+    script(src="/admin/js/post.js")
