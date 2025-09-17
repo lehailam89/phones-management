@@ -11,7 +11,7 @@ class RAGHelper {
         PRICE_SEARCH: 8,
         PROMOTION: 10,
         COMPARISON: 3,
-        FEATURED: 6
+        FEATURED: 8
     };
 
     // Tìm kiếm sản phẩm theo từ khóa với nhiều tiêu chí

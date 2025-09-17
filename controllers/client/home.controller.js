@@ -8,7 +8,7 @@ const productsFeatured = await Product.find({
     featured: "1",
     deleted: false,
     status: "active"
-}).limit(6);
+}).limit(8);
 
 const newProductsFeatured = productsHelper.priceNewProducts(productsFeatured);
 
@@ -18,7 +18,7 @@ const newProductsFeatured = productsHelper.priceNewProducts(productsFeatured);
 const productsNew = await Product.find({
     deleted: false,
     status: "active",
-}).sort({ position: "desc" }).limit(6);
+}).sort({ position: "desc" }).limit(8);
 const newProductsNew= productsHelper.priceNewProducts(productsNew);
 //End hiển thị sản phẩm mới nhất
 
