@@ -8,7 +8,7 @@ const productsFeatured = await Product.find({
     featured: "1",
     deleted: false,
     status: "active"
-}).limit(8);
+}).sort({ position: "desc" }).limit(8);
 
 const newProductsFeatured = productsHelper.priceNewProducts(productsFeatured);
 
