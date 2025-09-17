@@ -1,15 +1,13 @@
 include ../mixins/sub-menu.pug
 header.header 
-    
-
     .container 
         .row.align-items-center
-            .col-3
+            .col-lg-3.col-md-12.text-center.text-lg-start
                 .inner-logo
-                    a(href="/" class="d-flex align-items-center")
+                    a(href="/" class="d-flex align-items-center justify-content-center justify-content-lg-start")
                         img(src=settingGeneral.logo, alt="Logo")
 
-            .col-5 
+            .col-lg-5.col-md-12
                 .inner-search
                     form(
                         action="/search"
@@ -28,8 +26,7 @@ header.header
                                 value=keyword
                             )
                         
-            
-            .col-4 
+            .col-lg-4.col-md-12
                 .inner-menu
                     ul
                         li
@@ -56,5 +53,9 @@ header.header
                                 a(href="/user/login") Đăng nhập
                         li
                             a(href="/posts") Bài viết
-                        li 
-                            a(href="/chat") Chat AI
+
+// Chat AI Floating Button
+.chat-ai-floating
+    a(href="/chat")
+        i.fas.fa-comments
+        | Chat AI

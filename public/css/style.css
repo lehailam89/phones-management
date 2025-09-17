@@ -42,15 +42,15 @@ header {
 }
 
 .header .inner-menu {
-    margin-left: -100px;
+    margin-left: 0; /* Bỏ margin âm để responsive tốt hơn */
 }
 
 .header .inner-search {
-    margin-left: -100px;
+    margin-left: -100px; /* Bỏ margin âm để responsive tốt hơn */
 }
 
 .header .inner-search .search-box{
-    width: 90%;
+    width: 80%; /* Thay 80% thành 100% */
 }
 
 .header .inner-menu > ul {
@@ -60,28 +60,69 @@ header {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    flex-wrap: wrap;
+    flex-wrap: nowrap; /* Không cho xuống dòng */
+    gap: 3px; /* Khoảng cách nhỏ giữa các items */
 }
 
 .header .inner-menu > ul > li {
-    margin-left: 5px;
-    margin-top: 7px;
+    margin: 0; /* Bỏ hết margin */
 }
 
 .header .inner-menu > ul > li > a {
-    border: 1px solid none;
-    padding: 5px 10px;
+    border: 1px solid transparent;
+    padding: 5px 10px; /* Padding đồng nhất */
     border-radius: 5px;
     background-color: #DB0E0E;
     color: #fff;
+    font-size: 15px;
+    text-decoration: none;
+    display: flex; /* Để căn giữa nội dung */
+    align-items: center;
+    justify-content: center;
+    min-height: 32px; /* Chiều cao tối thiểu đồng nhất */
+    white-space: nowrap; /* Không cho text xuống dòng */
 } 
+
 .header .inner-menu > ul > li > a:hover {
     background-color: #fff;
     color: #DB0E0E;
     text-decoration: none;
-    transition: all 0.3;
+    transition: all 0.3s;
     border: 1px solid #DB0E0E;
 }
+
+/* Đảm bảo mini-cart có cùng kích thước */
+.mini-cart {
+    display: flex;
+    align-items: center;
+    position: relative;
+    color: #fff;
+    padding: 0; /* Bỏ padding riêng của mini-cart */
+}
+
+.mini-cart i {
+    font-size: 16px; /* Giảm size icon cho đồng nhất */
+    margin-right: 0; /* Bỏ margin để không ảnh hưởng kích thước */
+}
+
+.mini-cart-quantity {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    border: 1px solid #fff;
+    background-color: #DB0E0E;
+    color: #fff;
+    font-size: 10px; /* Giảm font-size cho phù hợp */
+    font-weight: bold;
+    padding: 1px 4px; /* Giảm padding */
+    border-radius: 50%; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 16px; /* Giảm kích thước */
+    min-height: 16px;
+}
+
 /* End Header */
 
 /* Search Box */
@@ -832,4 +873,36 @@ header {
     flex: 1;
 }
 /* End Blog Styles */
+
+/* Chat AI Floating Button */
+.chat-ai-floating {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.chat-ai-floating a {
+    background: #DB0E0E;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 20px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(219, 14, 14, 0.3);
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.chat-ai-floating a:hover {
+    background: #a00a0a;
+    transform: translateY(-2px);
+    color: white;
+    text-decoration: none;
+}
 
