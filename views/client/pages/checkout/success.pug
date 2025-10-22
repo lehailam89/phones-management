@@ -75,7 +75,13 @@ block main
                   i.fa-solid.fa-money-bill-wave.me-3(style="color: #DB0E0E; width: 20px;")
                   .info-content
                     strong.d-block Tổng tiền
-                    span.text-danger.fs-5.fw-bold #{order.totalPrice.toLocaleString('vi-VN')}$
+                    if order.totalDiscount > 0
+                      .d-flex.flex-column
+                        span.text-decoration-line-through.text-muted.small #{order.totalPriceOld.toLocaleString('vi-VN')}$
+                        span.text-danger.fs-5.fw-bold #{order.totalPrice.toLocaleString('vi-VN')}$
+                        span.text-success.small Tiết kiệm: #{order.totalDiscount.toLocaleString('vi-VN')}$
+                    else
+                      span.text-danger.fs-5.fw-bold #{order.totalPrice.toLocaleString('vi-VN')}$
 
       .row.justify-content-center.mt-4
         .col-lg-10
@@ -89,8 +95,8 @@ block main
                     tr
                       th(width="8%") STT
                       th(width="15%") Hình ảnh
-                      th(width="35%") Sản phẩm
-                      th(width="15%") Đơn giá
+                      th(width="30%") Sản phẩm
+                      th(width="20%") Đơn giá
                       th(width="12%") Số lượng
                       th(width="15%") Thành tiền
                   tbody
@@ -107,20 +113,43 @@ block main
                           td
                             .d-flex.flex-column
                               span.fw-bold= item.productInfo.title
-                              small.text-muted Mã SP: #{item.productInfo._id.toString().slice(-6).toUpperCase()}
-                          td.text-end
-                            span.fw-bold.text-primary #{item.priceNew.toLocaleString('vi-VN')}$
+                          td
+                            // Hiển thị cả giá gốc và giá khuyến mãi
+                            .price-section
+                              if item.discountPercentage > 0
+                                .d-flex.flex-column
+                                  span.text-decoration-line-through.text-muted.small #{item.priceOld.toLocaleString('vi-VN')}$
+                                  span.fw-bold.text-danger #{item.priceNew.toLocaleString('vi-VN')}$
+                                  span.badge.bg-danger.small -#{item.discountPercentage}%
+                              else
+                                span.fw-bold.text-primary #{item.priceNew.toLocaleString('vi-VN')}$
                           td.text-center
                             span.badge.bg-light.text-dark #{item.quantity}
-                          td.text-end
-                            span.fw-bold.text-danger #{item.totalPrice.toLocaleString('vi-VN')}$
+                          td
+                            // Hiển thị thành tiền với giá gốc và giá khuyến mãi
+                            .total-price-section.text-end
+                              if item.discountPercentage > 0
+                                .d-flex.flex-column
+                                  span.text-decoration-line-through.text-muted.small #{item.totalPriceOld.toLocaleString('vi-VN')}$
+                                  span.fw-bold.text-danger #{item.totalPrice.toLocaleString('vi-VN')}$
+                                  span.text-success.small Tiết kiệm: #{(item.totalPriceOld - item.totalPrice).toLocaleString('vi-VN')}$
+                              else
+                                span.fw-bold.text-danger #{item.totalPrice.toLocaleString('vi-VN')}$
 
               .card-footer.bg-light.py-3
                 .row
                   .col-md-8
                   .col-md-4.text-end
                     h4.mb-0
-                      strong.text-danger Tổng cộng: #{order.totalPrice.toLocaleString('vi-VN')}$
+                      if order.totalDiscount > 0
+                        .d-flex.flex-column.align-items-end
+                          span.text-decoration-line-through.text-muted.small Tổng gốc: #{order.totalPriceOld.toLocaleString('vi-VN')}$
+                          strong.text-danger Tổng cộng: #{order.totalPrice.toLocaleString('vi-VN')}$
+                          span.text-success.small
+                            i.fa-solid.fa-tag.me-1
+                            | Tiết kiệm: #{order.totalDiscount.toLocaleString('vi-VN')}$
+                      else
+                        strong.text-danger Tổng cộng: #{order.totalPrice.toLocaleString('vi-VN')}$
 
     .row.mt-5
       .col-12

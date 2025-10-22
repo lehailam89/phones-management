@@ -1,5 +1,6 @@
 const Order = require('../../models/order.model');
 const Product = require('../../models/product.model');
+const productsHelper = require('../../helpers/products.js');
 
 // [GET] /user/orders - Danh sách đơn hàng
 module.exports.index = async (req, res) => {
@@ -20,13 +21,20 @@ module.exports.index = async (req, res) => {
                 
                 if (productInfo) {
                     product.productInfo = productInfo;
-                    product.priceNew = ((product.price * (100 - product.discountPercentage)) / 100);
+                    // Thêm thông tin giá gốc và giá khuyến mãi
+                    product.priceNew = productsHelper.priceNewProduct(product);
+                    product.priceOld = product.price; // Giá gốc
+                    product.discountAmount = product.price - product.priceNew; // Số tiền được giảm
                     product.totalPrice = product.priceNew * product.quantity;
+                    product.totalPriceOld = product.priceOld * product.quantity; // Tổng tiền theo giá gốc
                 }
             }
             
             // Tính tổng giá trị đơn hàng
             order.totalPrice = order.products.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
+            // Thêm tổng tiền theo giá gốc
+            order.totalPriceOld = order.products.reduce((sum, item) => sum + (item.totalPriceOld || 0), 0);
+            order.totalDiscount = order.totalPriceOld - order.totalPrice; // Tổng số tiền được giảm
         }
 
         res.render("client/pages/user/orders", {
@@ -64,13 +72,20 @@ module.exports.detail = async (req, res) => {
             
             if (productInfo) {
                 product.productInfo = productInfo;
-                product.priceNew = ((product.price * (100 - product.discountPercentage)) / 100);
+                // Thêm thông tin giá gốc và giá khuyến mãi
+                product.priceNew = productsHelper.priceNewProduct(product);
+                product.priceOld = product.price; // Giá gốc
+                product.discountAmount = product.price - product.priceNew; // Số tiền được giảm
                 product.totalPrice = product.priceNew * product.quantity;
+                product.totalPriceOld = product.priceOld * product.quantity; // Tổng tiền theo giá gốc
             }
         }
 
         // Tính tổng giá trị đơn hàng
         order.totalPrice = order.products.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
+        // Thêm tổng tiền theo giá gốc
+        order.totalPriceOld = order.products.reduce((sum, item) => sum + (item.totalPriceOld || 0), 0);
+        order.totalDiscount = order.totalPriceOld - order.totalPrice; // Tổng số tiền được giảm
 
         res.render("client/pages/user/order-detail", {
             pageTitle: "Chi tiết đơn hàng",

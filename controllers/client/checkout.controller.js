@@ -19,15 +19,24 @@ module.exports.index = async (req, res) => {
                 _id: productId
             });
 
-            productInfo.priceNew = productsHelper.priceNewProduct(productInfo)
+            // Thêm giá gốc và giá khuyến mãi
+            productInfo.priceNew = productsHelper.priceNewProduct(productInfo);
+            productInfo.priceOld = productInfo.price; // Giá gốc
+            productInfo.discountAmount = productInfo.price - productInfo.priceNew; // Số tiền được giảm
 
             item.productInfo = productInfo;
 
+            // Tính tổng tiền dựa trên giá khuyến mãi
             item.totalPrice = item.quantity * productInfo.priceNew;
+            // Thêm tổng tiền theo giá gốc để so sánh
+            item.totalPriceOld = item.quantity * productInfo.priceOld;
         }
     }
 
     cart.totalPrice = cart.products.reduce((sum, item) => sum + item.totalPrice,0);
+    // Thêm tổng tiền theo giá gốc
+    cart.totalPriceOld = cart.products.reduce((sum, item) => sum + item.totalPriceOld,0);
+    cart.totalDiscount = cart.totalPriceOld - cart.totalPrice; // Tổng số tiền được giảm
 
     res.render("client/pages/checkout/index", 
     {
@@ -96,11 +105,18 @@ module.exports.success = async (req, res) => {
 
         product.productInfo = productInfo;
 
+        // Thêm thông tin giá gốc và giá khuyến mãi
         product.priceNew = productsHelper.priceNewProduct(product);
+        product.priceOld = product.price; // Giá gốc
+        product.discountAmount = product.price - product.priceNew; // Số tiền được giảm
         product.totalPrice = product.priceNew * product.quantity;
+        product.totalPriceOld = product.priceOld * product.quantity; // Tổng tiền theo giá gốc
     }
 
     order.totalPrice = order.products.reduce((sum, item) => sum + item.totalPrice, 0);
+    // Thêm tổng tiền theo giá gốc
+    order.totalPriceOld = order.products.reduce((sum, item) => sum + item.totalPriceOld, 0);
+    order.totalDiscount = order.totalPriceOld - order.totalPrice; // Tổng số tiền được giảm
 
     res.render("client/pages/checkout/success", {
         pageTitle: "Đặt hàng thành công",

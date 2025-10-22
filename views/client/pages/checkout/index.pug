@@ -23,8 +23,8 @@ block main
                     tr
                       th(width="8%") STT
                       th(width="15%") Hình ảnh
-                      th(width="35%") Sản phẩm
-                      th(width="15%") Đơn giá
+                      th(width="30%") Sản phẩm
+                      th(width="20%") Đơn giá
                       th(width="12%") Số lượng
                       th(width="15%") Thành tiền
                   tbody
@@ -40,13 +40,28 @@ block main
                         td
                           .d-flex.flex-column
                             span.fw-bold= item.productInfo.title
-                            small.text-muted Mã SP: #{item.product_id.slice(-6).toUpperCase()}
-                        td.text-end
-                          span.fw-bold.text-primary #{item.productInfo.priceNew.toLocaleString('vi-VN')}$
+                        td
+                          // Hiển thị cả giá gốc và giá khuyến mãi
+                          .price-section
+                            if item.productInfo.discountPercentage > 0
+                              .d-flex.flex-column
+                                span.text-decoration-line-through.text-muted.small #{item.productInfo.priceOld.toLocaleString('vi-VN')}$
+                                span.fw-bold.text-danger #{item.productInfo.priceNew.toLocaleString('vi-VN')}$
+                                span.badge.bg-danger.small -#{item.productInfo.discountPercentage}%
+                            else
+                              span.fw-bold.text-primary #{item.productInfo.priceNew.toLocaleString('vi-VN')}$
                         td.text-center
                           span.badge.bg-light.text-dark #{item.quantity}
-                        td.text-end
-                          span.fw-bold.text-danger #{item.totalPrice.toLocaleString('vi-VN')}$
+                        td
+                          // Hiển thị thành tiền với giá gốc và giá khuyến mãi
+                          .total-price-section.text-end
+                            if item.productInfo.discountPercentage > 0
+                              .d-flex.flex-column
+                                span.text-decoration-line-through.text-muted.small #{item.totalPriceOld.toLocaleString('vi-VN')}$
+                                span.fw-bold.text-danger #{item.totalPrice.toLocaleString('vi-VN')}$
+                                span.text-success.small Tiết kiệm: #{(item.totalPriceOld - item.totalPrice).toLocaleString('vi-VN')}$
+                            else
+                              span.fw-bold.text-danger #{item.totalPrice.toLocaleString('vi-VN')}$
 
               hr.my-4
               
@@ -56,7 +71,15 @@ block main
                   .card.border-0.bg-light
                     .card-body.text-center
                       h5.text-muted.mb-2 Tổng đơn hàng
-                      h3.text-danger.fw-bold #{cartDetail.totalPrice.toLocaleString('vi-VN')}$
+                      if cartDetail.totalDiscount > 0
+                        .d-flex.flex-column.mb-3
+                          span.text-decoration-line-through.text-muted #{cartDetail.totalPriceOld.toLocaleString('vi-VN')} $
+                          h3.text-danger.fw-bold.mb-1 #{cartDetail.totalPrice.toLocaleString('vi-VN')} $
+                          span.text-success.small
+                            i.fa-solid.fa-tag.me-1
+                            | Tiết kiệm: #{cartDetail.totalDiscount.toLocaleString('vi-VN')} $
+                      else
+                        h3.text-danger.fw-bold #{cartDetail.totalPrice.toLocaleString('vi-VN')}$
 
               hr.my-4
 

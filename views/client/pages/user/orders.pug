@@ -37,8 +37,16 @@ block main
                                         .col-md-4.text-end
                                             .order-summary
                                                 p.mb-2
-                                                    strong Tổng: 
-                                                    span.text-danger.fs-5 #{order.totalPrice.toLocaleString('vi-VN')}$
+                                                    if order.totalDiscount > 0
+                                                        .d-flex.flex-column.align-items-end
+                                                            span.text-decoration-line-through.text-muted.small #{order.totalPriceOld.toLocaleString('vi-VN')}$
+                                                            strong.text-danger.fs-5 #{order.totalPrice.toLocaleString('vi-VN')}$
+                                                            span.text-success.small
+                                                                i.fa-solid.fa-tag.me-1
+                                                                | Tiết kiệm: #{order.totalDiscount.toLocaleString('vi-VN')}$
+                                                    else
+                                                        strong Tổng: 
+                                                        span.text-danger.fs-5 #{order.totalPrice.toLocaleString('vi-VN')}$
                                                 a.btn.btn-outline-primary.btn-sm(href=`/user/orders/detail/${order._id}`)
                                                     i.fa-solid.fa-eye.me-1
                                                     | Xem chi tiết

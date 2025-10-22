@@ -18,15 +18,24 @@ module.exports.index = async (req, res) => {
                 _id: productId
             });
 
-            productInfo.priceNew = productsHelper.priceNewProduct(productInfo)
+            // Thêm giá gốc và giá khuyến mãi
+            productInfo.priceNew = productsHelper.priceNewProduct(productInfo);
+            productInfo.priceOld = productInfo.price; // Giá gốc
+            productInfo.discountAmount = productInfo.price - productInfo.priceNew; // Số tiền được giảm
 
             item.productInfo = productInfo;
 
+            // Tính tổng tiền dựa trên giá khuyến mãi
             item.totalPrice = item.quantity * productInfo.priceNew;
+            // Thêm tổng tiền theo giá gốc để so sánh
+            item.totalPriceOld = item.quantity * productInfo.priceOld;
         }
     }
 
-    cart.totalPrice = cart.products.reduce((sum, item) => sum + item.totalPrice,0)
+    cart.totalPrice = cart.products.reduce((sum, item) => sum + item.totalPrice,0);
+    // Thêm tổng tiền theo giá gốc
+    cart.totalPriceOld = cart.products.reduce((sum, item) => sum + item.totalPriceOld,0);
+    cart.totalDiscount = cart.totalPriceOld - cart.totalPrice; // Tổng số tiền được giảm
     
     res.render("client/pages/cart/index", {
         pageTitle: "Giỏ hàng",
