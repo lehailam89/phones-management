@@ -36,8 +36,9 @@ block main
                 img(
                   src=item.avatar
                   alt=item.fullName
-                  width="100px"
-                  height="auto"
+                  width="60px"
+                  height="60px"
+                  style="object-fit: cover; border-radius: 50%;"
                 )
               td #{item.fullName}
               td #{item.role.title}
