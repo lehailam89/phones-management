@@ -213,3 +213,70 @@ module.exports.info = async (req, res) => {
         });
     }
 }
+
+//[GET] /user/edit
+module.exports.edit = (req, res) => {
+    res.render("client/pages/user/edit", {
+        pageTitle: "Chỉnh sửa thông tin cá nhân"
+    });
+}
+
+//[POST] /user/edit
+module.exports.editPost = async (req, res) => {
+    try {
+        const userId = res.locals.user.id;
+        const { fullName, phone } = req.body;
+
+        // Cập nhật thông tin user
+        await User.updateOne(
+            { _id: userId },
+            { 
+                fullName: fullName,
+                phone: phone
+            }
+        );
+
+        req.flash("success", "Cập nhật thông tin thành công!");
+        res.redirect("/user/info");
+    } catch (error) {
+        console.error('Error updating user info:', error);
+        req.flash("error", "Có lỗi xảy ra khi cập nhật thông tin!");
+        res.redirect("back");
+    }
+}
+
+//[GET] /user/change-password
+module.exports.changePassword = (req, res) => {
+    res.render("client/pages/user/change-password", {
+        pageTitle: "Đổi mật khẩu"
+    });
+}
+
+//[POST] /user/change-password
+module.exports.changePasswordPost = async (req, res) => {
+    try {
+        const userId = res.locals.user.id;
+        const { currentPassword, newPassword } = req.body;
+
+        // Kiểm tra mật khẩu hiện tại
+        const user = await User.findById(userId);
+        if (md5(currentPassword) !== user.password) {
+            req.flash("error", "Mật khẩu hiện tại không đúng!");
+            res.redirect("back");
+            return;
+        }
+
+        // Cập nhật mật khẩu mới
+        await User.updateOne(
+            { _id: userId },
+            { password: md5(newPassword) }
+        );
+
+        req.flash("success", "Đổi mật khẩu thành công!");
+        res.redirect("/user/info");
+    } catch (error) {
+        console.error('Error changing password:', error);
+        req.flash("error", "Có lỗi xảy ra khi đổi mật khẩu!");
+        res.redirect("back");
+    }
+}

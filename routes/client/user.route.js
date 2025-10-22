@@ -30,6 +30,14 @@ router.post("/password/reset", validate.resetPasswordPost ,controller.resetPassw
 
 router.get("/info", authMiddleware.requireAuth ,controller.info);
 
+router.get("/edit", authMiddleware.requireAuth, controller.edit);
+
+router.post("/edit", authMiddleware.requireAuth, validate.editPost, controller.editPost);
+
+router.get("/change-password", authMiddleware.requireAuth, controller.changePassword);
+
+router.post("/change-password", authMiddleware.requireAuth, validate.changePasswordPost, controller.changePasswordPost);
+
 router.get("/orders", authMiddleware.requireAuth, orderController.index);
 
 router.get("/orders/detail/:orderId", authMiddleware.requireAuth, orderController.detail);

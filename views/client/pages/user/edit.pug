@@ -1,0 +1,151 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+
+block main
+    +alert-success(5000)
+    +alert-error(5000)
+
+    .container.my-5
+        .row.justify-content-center
+            .col-lg-8
+                .card.shadow-sm.border-0
+                    .card-header.text-white.py-3(style="background-color: #DB0E0E;")
+                        h4.mb-0.d-flex.align-items-center
+                            i.fa-solid.fa-edit.me-3
+                            | Chỉnh sửa thông tin cá nhân
+
+                    .card-body.p-4
+                        form(action="/user/edit" method="POST")
+                            .row
+                                .col-md-4.text-center.mb-4
+                                    .profile-avatar
+                                        if user.avatar
+                                            img.rounded-circle.shadow(src=user.avatar, alt="Avatar", style="width: 150px; height: 150px; object-fit: cover; border: 4px solid #e9ecef;")
+                                        else
+                                            .avatar-placeholder.rounded-circle.bg-secondary.d-flex.align-items-center.justify-content-center.mx-auto(style="width: 150px; height: 150px; border: 4px solid #e9ecef;")
+                                                i.fa-solid.fa-user.text-white.fa-4x
+                                    
+                                    .mt-3
+                                        button.btn.btn-outline-secondary.btn-sm(type="button", onclick="document.getElementById('avatarInput').click()")
+                                            i.fa-solid.fa-camera.me-2
+                                            | Đổi ảnh đại diện
+                                        input#avatarInput(type="file", accept="image/*", style="display: none;", disabled)
+                                        .small.text-muted.mt-1 (Tính năng sẽ có trong phiên bản sau)
+
+                                .col-md-8
+                                    .form-group.mb-3
+                                        label.form-label.fw-bold(for="fullName") 
+                                            i.fa-solid.fa-user.me-2(style="color: #DB0E0E;")
+                                            | Họ và tên
+                                            span.text-danger *
+                                        input.form-control(
+                                            type="text"
+                                            id="fullName"
+                                            name="fullName"
+                                            value=user.fullName
+                                            required
+                                            placeholder="Nhập họ và tên"
+                                        )
+
+                                    .form-group.mb-3
+                                        label.form-label.fw-bold(for="email")
+                                            i.fa-solid.fa-envelope.me-2(style="color: #DB0E0E;")
+                                            | Email
+                                        input.form-control(
+                                            type="email"
+                                            id="email"
+                                            value=user.email
+                                            disabled
+                                        )
+                                        .form-text.text-muted
+                                            i.fa-solid.fa-info-circle.me-1
+                                            | Email không thể thay đổi
+
+                                    .form-group.mb-3
+                                        label.form-label.fw-bold(for="phone")
+                                            i.fa-solid.fa-phone.me-2(style="color: #DB0E0E;")
+                                            | Số điện thoại
+                                        input.form-control(
+                                            type="tel"
+                                            id="phone"
+                                            name="phone"
+                                            value=user.phone
+                                            placeholder="Nhập số điện thoại"
+                                            pattern="[0-9]{10,11}"
+                                        )
+
+                                    .form-group.mb-3
+                                        label.form-label.fw-bold
+                                            i.fa-solid.fa-circle-check.me-2.text-success
+                                            | Trạng thái tài khoản
+                                        .form-control-plaintext
+                                            span.badge.bg-success= user.status === 'active' ? 'Hoạt động' : 'Không hoạt động'
+
+                                    .form-group.mb-4
+                                        label.form-label.fw-bold
+                                            i.fa-solid.fa-calendar.me-2(style="color: #DB0E0E;")
+                                            | Ngày đăng ký
+                                        .form-control-plaintext= new Date(user.createdAt).toLocaleDateString('vi-VN')
+
+                            .row
+                                .col-12
+                                    .d-flex.justify-content-between.align-items-center
+                                        .action-buttons
+                                            button.btn.px-4.me-3.text-white(type="submit", style="background-color: #DB0E0E; border-color: #DB0E0E;")
+                                                i.fa-solid.fa-save.me-2
+                                                | Lưu thay đổi
+                                            a.btn.btn-outline-secondary.px-4.me-3(href="/user/info")
+                                                i.fa-solid.fa-times.me-2
+                                                | Hủy bỏ
+                                            a.btn.btn-outline-info.px-4(href="/user/change-password")
+                                                i.fa-solid.fa-key.me-2
+                                                | Đổi mật khẩu
+
+                        .row.mt-4
+                            .col-12
+                                .alert.alert-info.d-flex.align-items-center
+                                    i.fa-solid.fa-lightbulb.me-2
+                                    div
+                                        strong Lưu ý:
+                                        ul.mb-0.mt-2
+                                            li Họ tên phải có ít nhất 2 ký tự
+                                            li Số điện thoại phải có 10-11 chữ số
+                                            li Email không thể thay đổi sau khi đăng ký
+                                            li Thông tin sẽ được cập nhật ngay lập tức
+
+        .row.mt-3
+            .col-12.text-center
+                a.btn.text-white.px-4(href="/user/info", style="background-color: #6c757d; border-color: #6c757d;")
+                    i.fa-solid.fa-arrow-left.me-2
+                    | Quay lại thông tin tài khoản
+
+    script.
+        // Xử lý preview ảnh đại diện (tính năng tương lai)
+        document.getElementById('avatarInput').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Tính năng sẽ được thêm sau
+                    alert('Tính năng đổi ảnh đại diện sẽ có trong phiên bản sau!');
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+
+        // Validation form
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const fullName = document.getElementById('fullName').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+
+            if (fullName.length < 2) {
+                e.preventDefault();
+                alert('Họ tên phải có ít nhất 2 ký tự!');
+                return;
+            }
+
+            if (phone && !/^[0-9]{10,11}$/.test(phone)) {
+                e.preventDefault();
+                alert('Số điện thoại không hợp lệ! Vui lòng nhập 10-11 chữ số.');
+                return;
+            }
+        });
