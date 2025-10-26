@@ -1,13 +1,43 @@
 const Order = require('../../models/order.model');
 const Product = require('../../models/product.model');
+const paginationHelper = require('../../helpers/pagination');
 
 module.exports.index = async (req, res) => {
-    const orders = await Order.find({}).sort({ createdAt: -1 });
+    try {
+        // Thiết lập phân trang
+        let initPagination = {
+            currentPage: 1,
+            limitItems: 10
+        };
 
-    res.render("admin/pages/orders/index", {
-        pageTitle: "Quản lý đơn hàng",
-        orders: orders
-    });
+        // Đếm tổng số đơn hàng
+        const totalOrders = await Order.countDocuments({});
+
+        // Tính toán phân trang
+        const objectPagination = paginationHelper(initPagination, req.query, totalOrders);
+
+        // Lấy đơn hàng với phân trang
+        const orders = await Order.find({})
+            .sort({ createdAt: -1 }) // Mới nhất ở trước
+            .skip(objectPagination.skip)
+            .limit(objectPagination.limitItems);
+
+        res.render("admin/pages/orders/index", {
+            pageTitle: "Quản lý đơn hàng",
+            orders: orders,
+            pagination: objectPagination,
+            totalOrders: totalOrders
+        });
+    } catch (error) {
+        console.error('Error in orders index:', error);
+        req.flash('error', 'Có lỗi xảy ra khi tải danh sách đơn hàng');
+        res.render("admin/pages/orders/index", {
+            pageTitle: "Quản lý đơn hàng",
+            orders: [],
+            pagination: null,
+            totalOrders: 0
+        });
+    }
 };
 
 // [GET] /admin/orders/detail/:id - Chi tiết đơn hàng

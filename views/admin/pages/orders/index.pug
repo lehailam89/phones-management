@@ -2,39 +2,78 @@ extends ../../layouts/default.pug
 include ../../mixins/alert.pug
 
 block main
-  +alert-success(5000)
-  +alert-error(5000)
-  
-  h1(class="mb-4") Quản lý đơn hàng
+    +alert-success(5000)
+    +alert-error(5000)
 
-  .card.mb-3
-    .card-header Danh sách
-    .card-body
-      if(orders.length > 0)
+    h1(class="mb-4") #{pageTitle}
+    
+    // Hiển thị tổng số đơn hàng
+    .mb-3
+        span.badge(style="background-color: #DB0E0E; color: white;") Tổng: #{totalOrders} đơn hàng
+
+    if orders.length > 0
         table(class="table table-hover table-sm")
-          thead
-            tr
-              th STT
-              th Mã đơn hàng
-              th Ngày đặt
-              th Tổng tiền
-              th Người đặt
-              th Hành động
-          tbody
-            each order, index in orders
-              tr
-                td #{index + 1}
-                td #{order._id}
-                td #{new Date(order.createdAt).toLocaleDateString('vi-VN')}
-                td #{order.totalPrice.toLocaleString('vi-VN')} $
-                td #{order.userInfo.fullName}
-                td
-                  a(
-                    class="btn btn-secondary btn-sm"
-                    href=`${prefixAdmin}/user/orders/detail/${order._id}`
-                  ) Chi tiết
-                  button(
-                    class="btn btn-danger btn-sm ml-1"
-                  ) Xóa
-      else
-        p Không có đơn hàng nào.
+            thead
+                tr
+                    th STT
+                    th Mã đơn hàng
+                    th Khách hàng
+                    th Số điện thoại
+                    th Số lượng SP
+                    th Tổng tiền
+                    th Ngày đặt
+                    th Hành động
+
+            tbody
+                each order, index in orders
+                    - const totalQuantity = order.products.reduce((sum, item) => sum + item.quantity, 0)
+                    - const totalPrice = order.products.reduce((sum, item) => sum + (item.price * (100 - item.discountPercentage) / 100 * item.quantity), 0)
+                    tr
+                        td #{pagination ? (pagination.skip + index + 1) : (index + 1)}
+                        td #{order._id}
+                        td #{order.userInfo.fullName}
+                        td #{order.userInfo.phone}
+                        td #{totalQuantity} sản phẩm
+                        td #{totalPrice.toLocaleString('vi-VN')} $
+                        td #{new Date(order.createdAt).toLocaleDateString('vi-VN')}
+                        td
+                            a(
+                                href=`${prefixAdmin}/user/orders/detail/${order._id}`
+                                class="btn btn-sm"
+                                style="background-color: #DB0E0E; color: white; border-color: #DB0E0E;"
+                            ) Chi tiết
+
+        // Phân trang
+        if pagination && pagination.totalPage > 1
+            .mt-4
+                nav(aria-label="Pagination Navigation")
+                    ul.pagination.justify-content-center
+                        // Previous button
+                        if pagination.currentPage > 1
+                            li.page-item
+                                a.page-link(href=`?page=${pagination.currentPage - 1}`) « Trước
+                        else
+                            li.page-item.disabled
+                                span.page-link « Trước
+
+                        // Page numbers
+                        - for (let i = 1; i <= pagination.totalPage; i++)
+                            if i == pagination.currentPage
+                                li.page-item.active
+                                    span.page-link= i
+                            else
+                                li.page-item
+                                    a.page-link(href=`?page=${i}`)= i
+
+                        // Next button
+                        if pagination.currentPage < pagination.totalPage
+                            li.page-item
+                                a.page-link(href=`?page=${pagination.currentPage + 1}`) Sau »
+                        else
+                            li.page-item.disabled
+                                span.page-link Sau »
+
+               
+    else
+        .text-center.py-5
+            p Chưa có đơn hàng nào
