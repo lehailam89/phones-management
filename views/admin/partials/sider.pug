@@ -17,7 +17,7 @@
                     a(href=`${prefixAdmin}/roles/permissions`, class=(currentUrl.startsWith(`${prefixAdmin}/roles/permissions`) ? 'active' : '')) Phân quyền
             if(role.permissions.includes('accounts_view'))
                 li 
-                    a(href=`${prefixAdmin}/accounts`, class=(currentUrl.startsWith(`${prefixAdmin}/accounts`) ? 'active' : '')) Tài khoản
+                    a(href=`${prefixAdmin}/accounts`, class=(currentUrl.startsWith(`${prefixAdmin}/accounts`) ? 'active' : '')) Tài khoản Admin
             if(role.permissions.includes('posts_view'))
                 li 
                     a(href=`${prefixAdmin}/posts`, class=(currentUrl.startsWith(`${prefixAdmin}/posts`) ? 'active' : '')) Bài viết
