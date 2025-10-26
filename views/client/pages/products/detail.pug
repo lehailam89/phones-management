@@ -1,6 +1,7 @@
 extends ../../layouts/default.pug
 include ../../mixins/box-head.pug
 include ../../mixins/alert.pug
+include ../../mixins/moment.pug
 
 block main
   +alert-success(3000)
@@ -81,7 +82,7 @@ block main
           
           // Form bình luận
           if (user)
-            form.comment-form.mb-4(action=`/products/detail/${product._id}/comments` method="POST")
+            form.comment-form.mb-4(action=`/products/comment/${product._id}` method="POST")
               .form-group
                 label(for="content") 
                   i.fa.fa-pen.mr-2
@@ -122,6 +123,140 @@ block main
                         | #{new Date(comment.createdAt).toLocaleString('vi-VN')}
                     .comment-content.mt-2.p-3.border.rounded.bg-light
                       | #{comment.content}
+                    
+                    if user
+                      button.btn.btn-link.btn-sm.p-0.reply-btn(
+                        data-comment-id=comment._id
+                      )
+                        i.fas.fa-reply.me-1
+                        | Trả lời
+                  
+                  // Reply Form (Initially Hidden)
+                  if user
+                    .reply-form.mt-3.d-none(id=`reply-form-${comment._id}`)
+                      .card.border-secondary
+                        .card-body
+                          form.reply-form-ajax(action=`/products/reply/${product._id}/${comment._id}`, method="POST", data-comment-id=comment._id)
+                            .mb-3
+                              textarea.form-control(
+                                name="content"
+                                rows="2"
+                                placeholder="Viết phản hồi..."
+                                required
+                              )
+                            .d-flex.gap-2
+                              button.btn.btn-secondary.btn-sm(type="submit")
+                                i.fas.fa-paper-plane.me-1
+                                | Gửi
+                              button.btn.btn-outline-secondary.btn-sm.cancel-reply(type="button")
+                                | Hủy
+                  
+                  // Replies
+                  if comment.replies && comment.replies.length > 0
+                    .replies.mt-3.ms-4
+                      - const topLevelReplies = comment.replies.filter(reply => !reply.parentReply)
+                      - const nestedReplies = comment.replies.filter(reply => reply.parentReply)
+                      
+                      each reply in topLevelReplies
+                        .reply-item.mb-3
+                          .card.border-light.bg-light
+                            .card-body.py-2
+                              .d-flex.align-items-start
+                                .reply-avatar.me-2
+                                  .bg-secondary.rounded-circle.d-flex.align-items-center.justify-content-center(
+                                    style="width: 30px; height: 30px;"
+                                  )
+                                    i.fas.fa-user.text-white(style="font-size: 12px;")
+                                
+                                .reply-content.flex-grow-1
+                                  .reply-header.d-flex.justify-content-between.align-items-center.mb-1
+                                    .reply-author
+                                      strong.small= reply.user ? reply.user.fullName : "Người dùng"
+                                    .reply-date.text-muted(style="font-size: 11px;")
+                                      +moment(reply.createdAt)
+                                  
+                                  if reply.replyTo
+                                    .reply-to.text-primary.small.mb-1
+                                      i.fas.fa-reply.me-1
+                                      | #{reply.replyTo}
+                                  
+                                  .reply-text.small= reply.content
+                                  
+                                  if user
+                                    button.btn.btn-link.btn-sm.p-0.reply-to-reply-btn.mt-1(
+                                      data-comment-id=comment._id
+                                      data-reply-id=reply._id
+                                      data-reply-author=reply.user ? reply.user.fullName : "Người dùng"
+                                      style="font-size: 11px;"
+                                    )
+                                      i.fas.fa-reply.me-1
+                                      | Trả lời
+                          
+                          // Nested replies for this reply
+                          - const childReplies = nestedReplies.filter(r => r.parentReply && r.parentReply.toString() === reply._id.toString())
+                          if childReplies.length > 0
+                            .nested-replies.ms-3
+                              each childReply in childReplies
+                                .reply-item.mb-2
+                                  .card.border-light(style="background-color: #f8f9fa;")
+                                    .card-body.py-1
+                                      .d-flex.align-items-start
+                                        .reply-avatar.me-2
+                                          .bg-info.rounded-circle.d-flex.align-items-center.justify-content-center(
+                                            style="width: 25px; height: 25px;"
+                                          )
+                                            i.fas.fa-user.text-white(style="font-size: 10px;")
+                                        
+                                        .reply-content.flex-grow-1
+                                          .reply-header.d-flex.justify-content-between.align-items-center.mb-1
+                                            .reply-author
+                                              strong(style="font-size: 11px;")= childReply.user ? childReply.user.fullName : "Người dùng"
+                                            .reply-date.text-muted(style="font-size: 10px;")
+                                              +moment(childReply.createdAt)
+                                          
+                                          if childReply.replyTo
+                                            .reply-to.text-primary.mb-1(style="font-size: 10px;")
+                                              i.fas.fa-reply.me-1
+                                              | #{childReply.replyTo}
+                                          
+                                          .reply-text(style="font-size: 11px;")= childReply.content
+                                          
+                                          if user
+                                            button.btn.btn-link.btn-sm.p-0.reply-to-reply-btn.mt-1(
+                                              data-comment-id=comment._id
+                                              data-reply-id=childReply._id
+                                              data-reply-author=childReply.user ? childReply.user.fullName : "Người dùng"
+                                              style="font-size: 10px;"
+                                            )
+                                              i.fas.fa-reply.me-1
+                                              | Trả lời
+                  
+                  // Reply to Reply Form (Initially Hidden)
+                  if user
+                    .reply-to-reply-form.mt-3.d-none(id=`reply-to-reply-form-${comment._id}`)
+                      .card.border-info
+                        .card-body
+                          .reply-to-info.mb-2.text-muted.small
+                            i.fas.fa-reply.me-1
+                            span Đang trả lời: 
+                            strong.reply-to-name
+                          form.reply-to-reply-form-ajax(action=`/products/reply/${product._id}/${comment._id}`, method="POST", data-comment-id=comment._id)
+                            input(type="hidden" name="replyTo" id=`replyToInput-${comment._id}`)
+                            input(type="hidden" name="parentReplyId" id=`parentReplyIdInput-${comment._id}`)
+                            .mb-3
+                              textarea.form-control(
+                                name="content"
+                                rows="2"
+                                placeholder="Viết phản hồi..."
+                                required
+                                style="font-size: 12px;"
+                              )
+                            .d-flex.gap-2
+                              button.btn.btn-info.btn-sm(type="submit")
+                                i.fas.fa-paper-plane.me-1
+                                | Gửi
+                              button.btn.btn-outline-secondary.btn-sm.cancel-reply-to-reply(type="button")
+                                | Hủy
             else
               .alert.alert-light.text-center.py-4.border
                 i.fa.fa-comment-slash.fa-2x.mb-3.text-muted
@@ -230,6 +365,561 @@ block main
         if (thumbImages.length > 0) {
           thumbImages[0].classList.add('selected');
         }
+
+        // JavaScript cho chức năng trả lời bình luận
+        // Toggle reply form
+        document.querySelectorAll('.reply-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const commentId = this.dataset.commentId;
+            const replyForm = document.getElementById(`reply-form-${commentId}`);
+            
+            // Hide all other reply forms
+            document.querySelectorAll('.reply-form').forEach(form => {
+              if (form.id !== `reply-form-${commentId}`) {
+                form.classList.add('d-none');
+              }
+            });
+            
+            // Hide all reply-to-reply forms
+            document.querySelectorAll('.reply-to-reply-form').forEach(form => {
+              form.classList.add('d-none');
+            });
+            
+            // Toggle current reply form
+            replyForm.classList.toggle('d-none');
+            
+            if (!replyForm.classList.contains('d-none')) {
+              replyForm.querySelector('textarea').focus();
+            }
+          });
+        });
+        
+        // Toggle reply to reply form
+        document.querySelectorAll('.reply-to-reply-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const commentId = this.dataset.commentId;
+            const replyId = this.dataset.replyId;
+            const replyAuthor = this.dataset.replyAuthor;
+            const replyToReplyForm = document.getElementById(`reply-to-reply-form-${commentId}`);
+            
+            // Hide all other forms
+            document.querySelectorAll('.reply-form').forEach(form => {
+              form.classList.add('d-none');
+            });
+            
+            document.querySelectorAll('.reply-to-reply-form').forEach(form => {
+              if (form.id !== `reply-to-reply-form-${commentId}`) {
+                form.classList.add('d-none');
+              }
+            });
+            
+            // Set reply info
+            const replyToInput = document.getElementById(`replyToInput-${commentId}`);
+            const parentReplyIdInput = document.getElementById(`parentReplyIdInput-${commentId}`);
+            const replyToName = replyToReplyForm.querySelector('.reply-to-name');
+            
+            if (replyToInput) replyToInput.value = replyAuthor;
+            if (parentReplyIdInput) parentReplyIdInput.value = replyId;
+            if (replyToName) replyToName.textContent = replyAuthor;
+            
+            // Show form
+            replyToReplyForm.classList.toggle('d-none');
+            
+            if (!replyToReplyForm.classList.contains('d-none')) {
+              replyToReplyForm.querySelector('textarea').focus();
+            }
+          });
+        });
+        
+        // Cancel reply
+        document.querySelectorAll('.cancel-reply').forEach(btn => {
+          btn.addEventListener('click', function() {
+            this.closest('.reply-form').classList.add('d-none');
+          });
+        });
+        
+        // Cancel reply to reply
+        document.querySelectorAll('.cancel-reply-to-reply').forEach(btn => {
+          btn.addEventListener('click', function() {
+            this.closest('.reply-to-reply-form').classList.add('d-none');
+          });
+        });
+        
+        // Function to show messages
+        const showMessage = (message, type) => {
+          // Remove existing alerts
+          document.querySelectorAll('.position-fixed.alert').forEach(alert => alert.remove());
+          
+          const alert = document.createElement('div');
+          alert.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+          alert.style.top = '20px';
+          alert.style.right = '20px';
+          alert.style.zIndex = '9999';
+          alert.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+          `;
+          document.body.appendChild(alert);
+          
+          setTimeout(() => {
+            if (alert.parentNode) {
+              alert.remove();
+            }
+          }, 3000);
+        };
+
+        // Helper function to format time
+        const formatTime = (dateString) => {
+          const now = new Date();
+          const date = new Date(dateString);
+          const diffInMs = now - date;
+          const diffInSeconds = Math.floor(diffInMs / 1000);
+          const diffInMinutes = Math.floor(diffInSeconds / 60);
+          const diffInHours = Math.floor(diffInMinutes / 60);
+          const diffInDays = Math.floor(diffInHours / 24);
+          
+          if (diffInSeconds < 60) {
+            return `${diffInSeconds} giây trước`;
+          } else if (diffInMinutes < 60) {
+            return `${diffInMinutes} phút trước`;
+          } else if (diffInHours < 24) {
+            return `${diffInHours} giờ trước`;
+          } else if (diffInDays < 7) {
+            return `${diffInDays} ngày trước`;
+          } else {
+            return date.toLocaleDateString('vi-VN', { 
+              year: 'numeric', 
+              month: 'short', 
+              day: 'numeric', 
+              hour: '2-digit', 
+              minute: '2-digit' 
+            });
+          }
+        };
+
+        // Helper function to create comment HTML
+        const createCommentHTML = (comment) => {
+          return `
+            <div class="comment-item mb-4">
+              <div class="comment-header d-flex justify-content-between align-items-center">
+                <div class="user-info">
+                  <i class="fa fa-user-circle mr-2"></i>
+                  <strong class="text-primary">${comment.user ? comment.user.fullName : 'Người dùng ẩn danh'}</strong>
+                </div>
+                <small class="text-muted">
+                  <i class="fa fa-clock mr-1"></i>
+                  ${formatTime(comment.createdAt)}
+                </small>
+              </div>
+              <div class="comment-content mt-2 p-3 border rounded bg-light">
+                ${comment.content}
+              </div>
+              <button class="btn btn-link btn-sm p-0 reply-btn" data-comment-id="${comment._id}">
+                <i class="fas fa-reply me-1"></i>
+                Trả lời
+              </button>
+            </div>
+            <div class="reply-form mt-3 d-none" id="reply-form-${comment._id}">
+              <div class="card border-secondary">
+                <div class="card-body">
+                  <form class="reply-form-ajax" data-comment-id="${comment._id}">
+                    <div class="mb-3">
+                      <textarea class="form-control" name="content" rows="2" placeholder="Viết phản hồi..." required></textarea>
+                    </div>
+                    <div class="d-flex gap-2">
+                      <button class="btn btn-secondary btn-sm" type="submit">
+                        <i class="fas fa-paper-plane me-1"></i>
+                        Gửi
+                      </button>
+                      <button class="btn btn-outline-secondary btn-sm cancel-reply" type="button">
+                        Hủy
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <div class="replies mt-3 ms-4" id="replies-${comment._id}">
+            </div>
+            <div class="reply-to-reply-form mt-3 d-none" id="reply-to-reply-form-${comment._id}">
+              <div class="card border-info">
+                <div class="card-body">
+                  <div class="reply-to-info mb-2 text-muted small">
+                    <i class="fas fa-reply me-1"></i>
+                    <span>Đang trả lời: </span>
+                    <strong class="reply-to-name"></strong>
+                  </div>
+                  <form class="reply-to-reply-form-ajax" data-comment-id="${comment._id}">
+                    <input type="hidden" name="replyTo">
+                    <input type="hidden" name="parentReplyId">
+                    <div class="mb-3">
+                      <textarea class="form-control" name="content" rows="2" placeholder="Viết phản hồi..." required style="font-size: 12px;"></textarea>
+                    </div>
+                    <div class="d-flex gap-2">
+                      <button class="btn btn-info btn-sm" type="submit">
+                        <i class="fas fa-paper-plane me-1"></i>
+                        Gửi
+                      </button>
+                      <button class="btn btn-outline-secondary btn-sm cancel-reply-to-reply" type="button">
+                        Hủy
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          `;
+        };
+
+        // Helper function to create reply HTML
+        const createReplyHTML = (reply, commentId) => {
+          return `
+            <div class="reply-item mb-3">
+              <div class="card border-light bg-light">
+                <div class="card-body py-2">
+                  <div class="d-flex align-items-start">
+                    <div class="reply-avatar me-2">
+                      <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                        <i class="fas fa-user text-white" style="font-size: 12px;"></i>
+                      </div>
+                    </div>
+                    <div class="reply-content flex-grow-1">
+                      <div class="reply-header d-flex justify-content-between align-items-center mb-1">
+                        <div class="reply-author">
+                          <strong class="small">${reply.user ? reply.user.fullName : 'Người dùng'}</strong>
+                        </div>
+                        <div class="reply-date text-muted" style="font-size: 11px;">
+                          ${formatTime(reply.createdAt)}
+                        </div>
+                      </div>
+                      ${reply.replyTo ? `
+                      <div class="reply-to text-primary small mb-1">
+                        <i class="fas fa-reply me-1"></i>
+                        ${reply.replyTo}
+                      </div>
+                      ` : ''}
+                      <div class="reply-text small">${reply.content}</div>
+                      <button class="btn btn-link btn-sm p-0 reply-to-reply-btn mt-1" 
+                              data-comment-id="${commentId}" 
+                              data-reply-id="${reply._id}" 
+                              data-reply-author="${reply.user ? reply.user.fullName : 'Người dùng'}"
+                              style="font-size: 11px;">
+                        <i class="fas fa-reply me-1"></i>
+                        Trả lời
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        };
+
+        // Handle comment form submission with AJAX
+        const commentForm = document.querySelector('.comment-form');
+        if (commentForm) {
+          commentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const textarea = commentForm.querySelector('textarea[name="content"]');
+            const content = textarea.value.trim();
+            
+            //console.log('Comment form submitted with content:', content); // Debug log
+            
+            // Client-side validation
+            if (!content) {
+              showMessage('Vui lòng nhập nội dung bình luận', 'error');
+              textarea.focus();
+              return;
+            }
+            
+            const params = new URLSearchParams();
+            params.append('content', content);
+            
+            const submitBtn = commentForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i>Đang gửi...';
+            
+            try {
+              const response = await fetch(commentForm.action, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                  'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: params.toString()
+              });
+              
+              //console.log('Response status:', response.status); // Debug log
+              
+              const result = await response.json();
+              //console.log('Response result:', result); // Debug log
+              
+              if (result.success) {
+                // Clear form
+                textarea.value = '';
+                
+                // Handle the case where no comments exist yet
+                const noCommentsAlert = document.querySelector('.alert.alert-light');
+                if (noCommentsAlert) {
+                  noCommentsAlert.style.display = 'none';
+                }
+                
+                // Find or create comment list
+                let commentList = document.querySelector('.comment-list');
+                if (!commentList) {
+                  const commentSection = document.querySelector('.comment-section');
+                  commentList = document.createElement('div');
+                  commentList.className = 'comment-list';
+                  commentSection.appendChild(commentList);
+                }
+                
+                // Insert new comment HTML
+                const commentHTML = createCommentHTML(result.comment);
+                commentList.insertAdjacentHTML('afterbegin', commentHTML);
+                
+                // Update comment counter
+                const counter = document.querySelector('.comment-counter');
+                const currentCount = parseInt(counter.textContent.match(/\d+/)[0]) || 0;
+                counter.innerHTML = `<i class="fa fa-comments mr-2"></i>Tất cả bình luận (${currentCount + 1})`;
+                
+                // Re-bind event listeners for new elements
+                bindAllEvents();
+                
+                // Show success message
+                showMessage('Bình luận thành công!', 'success');
+                
+               //console.log('Comment added successfully'); // Debug log
+              } else {
+                console.error('Server error:', result.message);
+                showMessage(result.message || 'Có lỗi xảy ra', 'error');
+              }
+            } catch (error) {
+              //console.error('AJAX Error:', error);
+              showMessage('Có lỗi xảy ra khi gửi bình luận', 'error');
+            }
+            
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+          });
+        }
+
+        // Handle reply form submission with AJAX
+        const handleReplySubmit = async (form) => {
+          const commentId = form.dataset.commentId;
+          const submitBtn = form.querySelector('button[type="submit"]');
+          const originalText = submitBtn.innerHTML;
+          const textarea = form.querySelector('textarea[name="content"]');
+          
+          // Client-side validation
+          const content = textarea.value.trim();
+          if (!content) {
+            showMessage('Vui lòng nhập nội dung trả lời', 'error');
+            textarea.focus();
+            return;
+          }
+
+          // Create URLSearchParams instead of FormData for better compatibility
+          const params = new URLSearchParams();
+          params.append('content', content);
+          
+          // Check if this is a reply-to-reply form
+          const replyToInput = form.querySelector('input[name="replyTo"]');
+          const parentReplyIdInput = form.querySelector('input[name="parentReplyId"]');
+          
+          if (replyToInput && replyToInput.value && replyToInput.value !== '') {
+            params.append('replyTo', replyToInput.value);
+          }
+          
+          if (parentReplyIdInput && parentReplyIdInput.value && parentReplyIdInput.value !== '') {
+            params.append('parentReplyId', parentReplyIdInput.value);
+          }
+          
+          //console.log('Sending params:', params.toString()); // Debug log
+          
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i>Đang gửi...';
+          
+          try {
+            const response = await fetch(`/products/reply/#{product._id}/${commentId}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest'
+              },
+              body: params.toString()
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+              // Clear form and hide it
+              textarea.value = '';
+              if (replyToInput) replyToInput.value = '';
+              if (parentReplyIdInput) parentReplyIdInput.value = '';
+              form.closest('.reply-form, .reply-to-reply-form').classList.add('d-none');
+              
+              // Add new reply to the replies container
+              const repliesContainer = document.getElementById(`replies-${commentId}`);
+              if (repliesContainer) {
+                const replyHTML = createReplyHTML(result.reply, commentId);
+                repliesContainer.insertAdjacentHTML('beforeend', replyHTML);
+              }
+              
+              // Re-bind event listeners
+              bindAllEvents();
+              
+              // Show success message
+              showMessage('Trả lời thành công!', 'success');
+            } else {
+              showMessage(result.message || 'Có lỗi xảy ra', 'error');
+            }
+          } catch (error) {
+            //console.error('Error:', error);
+            showMessage('Có lỗi xảy ra khi gửi trả lời', 'error');
+          }
+          
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalText;
+        };
+
+        // Event handlers
+        const handleReplyClick = function() {
+          const commentId = this.dataset.commentId;
+          const replyForm = document.getElementById(`reply-form-${commentId}`);
+          
+          // Hide all forms
+          document.querySelectorAll('.reply-form').forEach(form => {
+            form.classList.add('d-none');
+          });
+          document.querySelectorAll('.reply-to-reply-form').forEach(form => {
+            form.classList.add('d-none');
+          });
+          
+          // Show current form
+          if (replyForm) {
+            replyForm.classList.remove('d-none');
+            replyForm.querySelector('textarea').focus();
+          }
+        };
+
+        const handleReplyToReplyClick = function() {
+          const commentId = this.dataset.commentId;
+          const replyId = this.dataset.replyId;
+          const replyAuthor = this.dataset.replyAuthor;
+          const replyToReplyForm = document.getElementById(`reply-to-reply-form-${commentId}`);
+          
+          // Hide all forms
+          document.querySelectorAll('.reply-form').forEach(form => {
+            form.classList.add('d-none');
+          });
+          document.querySelectorAll('.reply-to-reply-form').forEach(form => {
+            form.classList.add('d-none');
+          });
+          
+          if (replyToReplyForm) {
+            // Set reply info with correct selectors
+            const replyToInput = replyToReplyForm.querySelector('input[name="replyTo"]');
+            const parentReplyIdInput = replyToReplyForm.querySelector('input[name="parentReplyId"]');
+            const replyToName = replyToReplyForm.querySelector('.reply-to-name');
+            
+            //console.log('Setting reply info:', { replyAuthor, replyId }); // Debug log
+            
+            if (replyToInput) {
+              replyToInput.value = replyAuthor;
+              //console.log('Set replyTo input:', replyToInput.value);
+            }
+            if (parentReplyIdInput) {
+              parentReplyIdInput.value = replyId;
+              //console.log('Set parentReplyId input:', parentReplyIdInput.value);
+            }
+            if (replyToName) replyToName.textContent = replyAuthor;
+            
+            // Show form
+            replyToReplyForm.classList.remove('d-none');
+            const textarea = replyToReplyForm.querySelector('textarea');
+            if (textarea) textarea.focus();
+          }
+        };
+
+        const handleReplyFormSubmit = function(e) {
+          e.preventDefault();
+          handleReplySubmit(this);
+        };
+
+        const handleCancelReply = function() {
+          const form = this.closest('.reply-form, .reply-to-reply-form');
+          if (form) {
+            form.classList.add('d-none');
+            // Clear form data
+            const textarea = form.querySelector('textarea');
+            if (textarea) textarea.value = '';
+            const inputs = form.querySelectorAll('input[type="hidden"]');
+            inputs.forEach(input => input.value = '');
+          }
+        };
+
+        const handleCancelReplyToReply = function() {
+          const form = this.closest('.reply-to-reply-form');
+          if (form) {
+            form.classList.add('d-none');
+            // Clear form data
+            const textarea = form.querySelector('textarea');
+            if (textarea) textarea.value = '';
+            const inputs = form.querySelectorAll('input[type="hidden"]');
+            inputs.forEach(input => input.value = '');
+          }
+        };
+
+        // Function to bind all events
+        const bindAllEvents = () => {
+          // Remove existing listeners to prevent duplicates
+          document.querySelectorAll('.reply-btn').forEach(btn => {
+            btn.removeEventListener('click', handleReplyClick);
+            btn.addEventListener('click', handleReplyClick);
+          });
+          
+          document.querySelectorAll('.reply-to-reply-btn').forEach(btn => {
+            btn.removeEventListener('click', handleReplyToReplyClick);
+            btn.addEventListener('click', handleReplyToReplyClick);
+          });
+          
+          document.querySelectorAll('.reply-form-ajax').forEach(form => {
+            form.removeEventListener('submit', handleReplyFormSubmit);
+            form.addEventListener('submit', handleReplyFormSubmit);
+          });
+          
+          document.querySelectorAll('.reply-to-reply-form-ajax').forEach(form => {
+            form.removeEventListener('submit', handleReplyFormSubmit);
+            form.addEventListener('submit', handleReplyFormSubmit);
+          });
+          
+          document.querySelectorAll('.cancel-reply').forEach(btn => {
+            btn.removeEventListener('click', handleCancelReply);
+            btn.addEventListener('click', handleCancelReply);
+          });
+          
+          document.querySelectorAll('.cancel-reply-to-reply').forEach(btn => {
+            btn.removeEventListener('click', handleCancelReplyToReply);
+            btn.addEventListener('click', handleCancelReplyToReply);
+          });
+          
+          // Auto-resize textareas
+          document.querySelectorAll('textarea').forEach(textarea => {
+            textarea.removeEventListener('input', autoResizeTextarea);
+            textarea.addEventListener('input', autoResizeTextarea);
+          });
+        };
+
+        const autoResizeTextarea = function() {
+          this.style.height = 'auto';
+          this.style.height = this.scrollHeight + 'px';
+        };
+
+        // Initial binding
+        bindAllEvents();
       });
 
     style.
@@ -327,4 +1017,31 @@ block main
         color: #333;
         margin-top: 20px;
         margin-bottom: 10px;
+      }
+
+      .comment-item, .reply-item {
+        transition: all 0.2s ease;
+      }
+      
+      .comment-item:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      }
+      
+      .reply-btn {
+        transition: color 0.2s ease;
+      }
+      
+      .reply-btn:hover {
+        color: #0d6efd !important;
+      }
+      
+      .thumbnail:hover {
+        transform: scale(1.05);
+        transition: transform 0.2s ease;
+      }
+      
+      .product-images .main-image img {
+        max-height: 400px;
+        object-fit: contain;
       }

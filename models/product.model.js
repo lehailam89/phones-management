@@ -3,6 +3,30 @@ const slug = require("mongoose-slug-updater");
 
 mongoose.plugin(slug);
 
+const replySchema = new mongoose.Schema({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    content: {
+        type: String,
+        required: true
+    },
+    parentReply: {
+        type: mongoose.Schema.Types.ObjectId,
+        default: null
+    },
+    replyTo: {
+        type: String,
+        default: ""
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
+});
+
 const commentSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
@@ -13,6 +37,7 @@ const commentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    replies: [replySchema],
     createdAt: {
         type: Date,
         default: Date.now

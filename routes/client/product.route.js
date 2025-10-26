@@ -9,7 +9,9 @@ router.get('/detail/:slugProduct', controller.detail);
 
 router.get('/:slugCategory', controller.category);
 
-router.post('/detail/:id/comments', requireAuth, controller.addComment); 
+// Comment routes - require authentication
+router.post('/comment/:id', requireAuth, controller.addComment);
+router.post('/reply/:id/:commentId', requireAuth, controller.addReply);
 
 
 module.exports = router;

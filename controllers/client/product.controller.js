@@ -260,7 +260,8 @@ module.exports.detail = async (req, res) => {
             slug: slug,
             deleted: false,
             status: "active"
-        }).populate('comments.user', 'fullName');
+        }).populate('comments.user', 'fullName')
+          .populate('comments.replies.user', 'fullName');
 
         // Nếu không tìm thấy bằng slug, thử tìm bằng ID (fallback)
         if (!product && slug) {
@@ -269,7 +270,8 @@ module.exports.detail = async (req, res) => {
                 _id: slug,
                 deleted: false,
                 status: "active"
-            }).populate('comments.user', 'fullName');
+            }).populate('comments.user', 'fullName')
+              .populate('comments.replies.user', 'fullName');
         }
 
         if (!product) {
@@ -310,22 +312,148 @@ module.exports.addComment = async (req, res) => {
 
         const product = await Product.findById(productId);
         if (!product) {
+            if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+                return res.status(404).json({ success: false, message: 'Sản phẩm không tồn tại' });
+            }
             req.flash('error', 'Sản phẩm không tồn tại');
             return res.redirect('back');
         }
 
         const comment = {
             user: req.user._id,
-            content: content
+            content: content,
+            replies: []
         };
 
         product.comments.push(comment);
         await product.save();
 
+        // Populate user info cho response
+        await product.populate('comments.user', 'fullName');
+        const newComment = product.comments[product.comments.length - 1];
+
+        if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+            return res.json({ 
+                success: true, 
+                message: 'Bình luận thành công',
+                comment: {
+                    _id: newComment._id,
+                    content: newComment.content,
+                    user: newComment.user,
+                    createdAt: newComment.createdAt,
+                    replies: []
+                }
+            });
+        }
+
         req.flash('success', 'Bình luận thành công');
         res.redirect(`/products/detail/${product.slug}`);
     } catch (error) {
         console.error(error);
+        if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+            return res.status(500).json({ success: false, message: 'Có lỗi xảy ra' });
+        }
+        req.flash('error', 'Có lỗi xảy ra');
+        res.redirect('back');
+    }
+};
+
+module.exports.addReply = async (req, res) => {
+    try {
+        const productId = req.params.id;
+        const commentId = req.params.commentId;
+        const { content, replyTo, parentReplyId } = req.body;
+
+        // Debug logging
+        console.log('Reply request body:', req.body);
+        console.log('Content value:', content);
+        console.log('Content type:', typeof content);
+
+        // Validate content
+        if (!content || typeof content !== 'string' || content.trim() === '') {
+            const errorMessage = 'Nội dung trả lời không được để trống';
+            console.log('Content validation failed:', content);
+            if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+                return res.status(400).json({ success: false, message: errorMessage });
+            }
+            req.flash('error', errorMessage);
+            return res.redirect('back');
+        }
+
+        const product = await Product.findById(productId);
+        if (!product) {
+            if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+                return res.status(404).json({ success: false, message: 'Sản phẩm không tồn tại' });
+            }
+            req.flash('error', 'Sản phẩm không tồn tại');
+            return res.redirect('back');
+        }
+
+        const comment = product.comments.id(commentId);
+        if (!comment) {
+            if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+                return res.status(404).json({ success: false, message: 'Bình luận không tồn tại' });
+            }
+            req.flash('error', 'Bình luận không tồn tại');
+            return res.redirect('back');
+        }
+
+        // Create reply object with validation
+        const trimmedContent = content.trim();
+        const reply = {
+            user: req.user._id,
+            content: trimmedContent,
+            parentReply: parentReplyId && parentReplyId !== '' && parentReplyId !== 'undefined' ? parentReplyId : null,
+            replyTo: replyTo && replyTo !== '' && replyTo !== 'undefined' ? replyTo.trim() : ""
+        };
+
+        // Final validation
+        if (!reply.content || reply.content.length === 0) {
+            const errorMessage = 'Nội dung trả lời không hợp lệ';
+            console.log('Final validation failed:', reply);
+            if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+                return res.status(400).json({ success: false, message: errorMessage });
+            }
+            req.flash('error', errorMessage);
+            return res.redirect('back');
+        }
+
+        console.log('Reply object before save:', reply);
+        
+        comment.replies.push(reply);
+        await product.save();
+
+        // Populate user info cho response
+        await product.populate({
+            path: 'comments.replies.user',
+            select: 'fullName'
+        });
+        
+        const newReply = comment.replies[comment.replies.length - 1];
+
+        if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+            return res.json({ 
+                success: true, 
+                message: 'Trả lời thành công',
+                reply: {
+                    _id: newReply._id,
+                    content: newReply.content,
+                    user: newReply.user,
+                    createdAt: newReply.createdAt,
+                    parentReply: newReply.parentReply,
+                    replyTo: newReply.replyTo
+                },
+                commentId: commentId
+            });
+        }
+
+        req.flash('success', 'Trả lời thành công');
+        res.redirect(`/products/detail/${product.slug}`);
+    } catch (error) {
+        console.error('Error in addReply:', error);
+        if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+            return res.status(500).json({ success: false, message: 'Có lỗi xảy ra khi gửi trả lời' });
+        }
         req.flash('error', 'Có lỗi xảy ra');
         res.redirect('back');
     }
