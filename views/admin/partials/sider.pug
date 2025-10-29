@@ -21,7 +21,7 @@
             if(role.permissions.includes('posts_view'))
                 li 
                     a(href=`${prefixAdmin}/posts`, class=(currentUrl.startsWith(`${prefixAdmin}/posts`) ? 'active' : '')) Bài viết
-            li 
-                a(href=`${prefixAdmin}/settings/general`, class=(currentUrl.startsWith(`${prefixAdmin}/settings`) ? 'active' : '')) Cài đặt chung
             li  
                 a(href=`${prefixAdmin}/user/orders`, class=(currentUrl.startsWith(`${prefixAdmin}/user/orders`) ? 'active' : '')) Đơn hàng
+            li 
+                a(href=`${prefixAdmin}/settings/general`, class=(currentUrl.startsWith(`${prefixAdmin}/settings`) ? 'active' : '')) Cài đặt chung
