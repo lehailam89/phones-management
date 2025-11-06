@@ -15,7 +15,8 @@ module.exports.index = async (req, res) => {
             title: keywordRegex,
             status: "active",
             deleted: false
-        });    
+        })
+        .sort({ createdAt: -1 }); // Thêm dòng này để sắp xếp mới nhất trước;    
 
         newProducts = productsHelper.priceNewProducts(products);
     }
