@@ -73,7 +73,7 @@ block main
                                                     .price-section
                                                         if product.discountPercentage > 0
                                                             .d-flex.flex-column
-                                                                span.text-decoration-line-through.text-muted.small #{product.priceOld.toLocaleString('vi-VN')}$
+                                                                span.text-decoration-line-through.text-muted.small.fw-bold(style="text-decoration: line-through !important;") #{product.priceOld.toLocaleString('vi-VN')}$
                                                                 span.fw-bold.text-danger #{product.priceNew.toLocaleString('vi-VN')}$
                                                                 span.badge.bg-danger.small -#{product.discountPercentage}%
                                                         else
@@ -84,7 +84,7 @@ block main
                                                     .total-price-section.text-end
                                                         if product.discountPercentage > 0
                                                             .d-flex.flex-column
-                                                                span.text-decoration-line-through.text-muted.small #{product.totalPriceOld.toLocaleString('vi-VN')}$
+                                                                span.text-decoration-line-through.text-muted.small.fw-bold(style="text-decoration: line-through !important;") #{product.totalPriceOld.toLocaleString('vi-VN')}$
                                                                 span.fw-bold.text-danger #{(product.totalPrice || 0).toLocaleString('vi-VN')}$
                                                                 span.text-success.small Tiết kiệm: #{(product.totalPriceOld - product.totalPrice).toLocaleString('vi-VN')}$
                                                         else
@@ -96,7 +96,7 @@ block main
                             h4
                                 if order.totalDiscount > 0
                                     .d-flex.flex-column.align-items-end
-                                        span.text-decoration-line-through.text-muted.small Tổng gốc: #{order.totalPriceOld.toLocaleString('vi-VN')}$
+                                        span.text-decoration-line-through.text-muted.small.fw-bold(style="text-decoration: line-through !important;") Tổng gốc: #{order.totalPriceOld.toLocaleString('vi-VN')}$
                                         strong.text-danger Tổng cộng: #{order.totalPrice.toLocaleString('vi-VN')}$
                                         span.text-success.small
                                             i.fa-solid.fa-tag.me-1

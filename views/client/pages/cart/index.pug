@@ -48,7 +48,7 @@ block main
                           .price-section
                             if item.productInfo.discountPercentage > 0
                               .d-flex.flex-column
-                                span.text-decoration-line-through.text-muted.small #{item.productInfo.priceOld.toLocaleString('vi-VN')}$
+                                span.text-decoration-line-through.text-muted.small.fw-bold(style="text-decoration: line-through !important;") #{item.productInfo.priceOld.toLocaleString('vi-VN')}$
                                 span.fw-bold.text-danger #{item.productInfo.priceNew.toLocaleString('vi-VN')}$
                                 span.badge.bg-danger.small -#{item.productInfo.discountPercentage}%
                             else
@@ -69,7 +69,7 @@ block main
                           .total-price-section.text-end
                             if item.productInfo.discountPercentage > 0
                               .d-flex.flex-column
-                                span.text-decoration-line-through.text-muted.small #{item.totalPriceOld.toLocaleString('vi-VN')}$
+                                span.text-decoration-line-through.text-muted.small.fw-bold(style="text-decoration: line-through !important;") #{item.totalPriceOld.toLocaleString('vi-VN')}$
                                 span.fw-bold.text-danger.fs-5 #{item.totalPrice.toLocaleString('vi-VN')}$
                                 span.text-success.small Tiết kiệm: #{(item.totalPriceOld - item.totalPrice).toLocaleString('vi-VN')}$
                             else
@@ -95,13 +95,13 @@ block main
                       h5.text-muted.mb-2 Tổng đơn hàng
                       if cartDetail.totalDiscount > 0
                         .d-flex.flex-column.mb-3
-                          span.text-decoration-line-through.text-muted #{cartDetail.totalPriceOld.toLocaleString('vi-VN')} $
-                          h3.text-danger.fw-bold.mb-1 #{cartDetail.totalPrice.toLocaleString('vi-VN')} $
+                          span.text-decoration-line-through.text-muted.fw-bold(style="text-decoration: line-through !important;") #{cartDetail.totalPriceOld.toLocaleString('vi-VN')}$
+                          h3.text-danger.fw-bold.mb-1 #{cartDetail.totalPrice.toLocaleString('vi-VN')}$
                           span.text-success.small
                             i.fa-solid.fa-tag.me-1
-                            | Tiết kiệm: #{cartDetail.totalDiscount.toLocaleString('vi-VN')} $
+                            | Tiết kiệm: #{cartDetail.totalDiscount.toLocaleString('vi-VN')}$
                       else
-                        h3.text-danger.fw-bold.mb-3 #{cartDetail.totalPrice.toLocaleString('vi-VN')} $
+                        h3.text-danger.fw-bold.mb-3 #{cartDetail.totalPrice.toLocaleString('vi-VN')}$
                       a.btn.text-white.px-4.py-2(
                         href="/checkout",
                         style="background-color: #DB0E0E; border-color: #DB0E0E;"

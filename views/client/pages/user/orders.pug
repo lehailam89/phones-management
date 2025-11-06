@@ -39,7 +39,7 @@ block main
                                                 p.mb-2
                                                     if order.totalDiscount > 0
                                                         .d-flex.flex-column.align-items-end
-                                                            span.text-decoration-line-through.text-muted.small #{order.totalPriceOld.toLocaleString('vi-VN')}$
+                                                            span.text-decoration-line-through.text-muted.small.fw-bold(style="text-decoration: line-through !important;") #{order.totalPriceOld.toLocaleString('vi-VN')}$
                                                             strong.text-danger.fs-5 #{order.totalPrice.toLocaleString('vi-VN')}$
                                                             span.text-success.small
                                                                 i.fa-solid.fa-tag.me-1
