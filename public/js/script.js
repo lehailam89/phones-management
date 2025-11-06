@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Hiển thị thông báo chào mừng nếu là session mới
             if (!currentSessionId && messages && messages.children.length === 0) {
                 const welcomeMessage = createMessageElement(
-                    'Xin chào! Tôi là trợ lý ảo của Lâm Mobile. Tôi có thể giúp bạn tìm hiểu về các sản phẩm điện thoại, giá cả, và tư vấn lựa chọn phù hợp. Bạn cần hỗ trợ gì hôm nay?', 
+                    'Xin chào! Tôi là trợ lý ảo của Lâm Mobiles. Tôi có thể giúp bạn tìm hiểu về các sản phẩm điện thoại, giá cả, và tư vấn lựa chọn phù hợp. Bạn cần hỗ trợ gì hôm nay?', 
                     false
                 );
                 messages.appendChild(welcomeMessage);
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Sender name
         const senderName = document.createElement('div');
         senderName.className = 'sender-name';
-        senderName.textContent = isUser ? 'Bạn' : 'Lâm Mobile';
+        senderName.textContent = isUser ? 'Bạn' : 'Lâm Mobiles';
         
         // Message text
         const messageText = document.createElement('div');
