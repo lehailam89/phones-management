@@ -2,7 +2,7 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const RAGHelper = require("../../helpers/ragHelper");
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 // Lưu trữ lịch sử cuộc trò chuyện trong memory (có thể chuyển sang Redis/Database sau)
 const conversationStore = new Map();
