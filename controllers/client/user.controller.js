@@ -32,6 +32,7 @@ module.exports.registerPost = async (req, res) => {
     await user.save();
     res.cookie("tokenUser", user.tokenUser);
     
+    req.flash("success", "Đăng ký tài khoản thành công! Chào mừng bạn đến với Lâm Mobiles!");
     res.redirect("/");
 }
 
@@ -70,6 +71,7 @@ module.exports.loginPost = async (req, res) => {
         res.redirect("back");
         return;
     }
+    
     res.cookie("tokenUser", user.tokenUser);
 
     //Lưu user_id vào collections cart
@@ -79,13 +81,15 @@ module.exports.loginPost = async (req, res) => {
         user_id: user.id
     });
 
+    req.flash("success", `Đăng nhập thành công! Xin chào ${user.fullName}!`);
     res.redirect("/");
 }
 
 //[GET] /logout
 module.exports.logout  = (req, res) => {
     res.clearCookie("tokenUser");
-
+    
+    req.flash("success", "Đăng xuất thành công! Hẹn gặp lại bạn!");
     res.redirect("/");
 }
 
