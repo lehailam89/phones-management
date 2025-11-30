@@ -284,11 +284,6 @@ Truy cập: `http://localhost:3000`
 - **GitHub**: [@lehailam89](https://github.com/lehailam89)
 - **Demo**: [https://phones-management-seven.vercel.app/](https://phones-management-seven.vercel.app/)
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
-
----
 
 ### 🏆 Key Highlights
 
@@ -300,6 +295,6 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 - ☁️ **Cloud integration** with Cloudinary
 - 💾 **MongoDB** for scalable data storage
 
-**Made with ❤️ by Lê Hải Lâm**
+
 
 
