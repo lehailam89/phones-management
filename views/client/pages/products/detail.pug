@@ -457,7 +457,7 @@ block main
           alert.style.zIndex = '9999';
           alert.innerHTML = `
             ${message}
-            <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+            <button type="button" class="close" onclick="this.parentElement.remove()">x</button>
           `;
           document.body.appendChild(alert);
           
